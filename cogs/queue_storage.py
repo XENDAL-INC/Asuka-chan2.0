@@ -48,19 +48,26 @@ class queue_storage(commands.Cog):
   async def cqueue(self, ctx):
     queueName = ctx.message.content
 
-    if (queueName == "$cqueue"):
+    if (queueName == "$squeue"):
       await ctx.send('You have to give a name to the queue b-Baka!')
     elif (queueName == ""):
       await ctx.send('You have to give a name to the queue b-Baka!')
     else:
-      queueName = queueName.replace("$cqueue ", "", -1)
-      queueName = queueName + '.txt'
-      f = open(queueName, "w")
-      await ctx.send(
-          '**NICEU ' + ctx.message.author.mention +
-          'SEMPAI!** You have created the a new queue called ' +
-          queueName.replace(".txt", "", -1) + ' :heart:')
+      queueName = queueName.replace("$squeue ", "", -1)
+      f = open(queueName + '.txt' , "w")
+      temp=""
+      #queueList = player.queue
+      queueList=[]
+      count=0
+      for x in queueList:
+        if count!=0:
+          temp +=("\n")
+        temp += x
+        count+=1
+      f.write(temp)
       f.close
+      
+      await ctx.send('**NICEU ' + ctx.message.author.mention + 'SEMPAI!** You have created the a new queue called ' + queueName + ' :heart:')
 
 
   @commands.command()

@@ -1,6 +1,7 @@
 import re
 import discord
 import lavalink
+import os
 from discord.ext import commands
 from discord import Embed
 
@@ -13,7 +14,7 @@ class music(commands.Cog):
 
     if not hasattr(bot, 'lavalink'):  # This ensures the client isn't overwritten during cog reloads.
       bot.lavalink = lavalink.Client(bot.user.id)
-      bot.lavalink.add_node('0.0.0.0', 6969, 'yourpass', 'eu', 'default-node')  # Host, Port, Password, Region, Name
+      bot.lavalink.add_node('0.0.0.0', 7000, 'yourpass', 'eu', 'default-node')  # Host, Port, Password, Region, Name
       bot.add_listener(bot.lavalink.voice_update_handler, 'on_socket_response')
 
     lavalink.add_event_hook(self.track_hook)
@@ -270,6 +271,98 @@ class music(commands.Cog):
     await ctx.message.add_reaction("⛔")
     await ctx.send('Sorry ' + ctx.message.author.mention + ' Sempai, I hope i was being usefull :cry:')
 
+  @commands.command()
+  async def remove(self, ctx):
+    """ Removes track from queue at position given after command. """
+    player = self.bot.lavalink.player_manager.get(ctx.guild.id)
+
+    if not player.is_connected:
+      return await ctx.send('Not connected.')
+    else:
+      if player.queue:
+        queueLength = len(player.queue)
+        index = int(ctx.message.content.replace("$remove ","",-1))
+        index-=2
+
+        if (queueLength-1)>=index:
+          await ctx.send("```\nThe Track: " + str(player.queue[index]['title']) + " has been removed\n```")
+          player.queue.pop(index)
+        else:
+          await ctx.send("Invalid Track Number or There is only 1 song in queue")
+      else:
+        await ctx.send("There is no queue currently playing")
+
+  
+  @commands.command()
+  async def squeue(self, ctx):
+    """ Saves the current playing queue. """
+    player = self.bot.lavalink.player_manager.get(ctx.guild.id)
+
+    if not player.is_connected:
+        return await ctx.send('Not connected.')
+    
+    else:
+      author=ctx.message.author.name
+      if(author=='XENDAL_INC'):
+        honorifics='-Sama!'
+      else:
+        honorifics=' Sempai!'
+      
+      queueName = ctx.message.content
+      currentTrack = str(player.current['title'])
+
+      if (queueName == "$squeue"):
+        await ctx.send('You have to give a name to the queue b-Baka!')
+      elif (queueName == ""):
+        await ctx.send('You have to give a name to the queue b-Baka!')
+      else:
+        queueName = queueName.replace("$squeue ", "", -1)
+        f = open(queueName + '.txt' , "w")
+        temp=currentTrack
+        queueList = player.queue
+        for x in queueList:
+          temp += "\n" + str(x['title'])
+        f.write(temp)
+        f.close
+        
+        await ctx.send('**NICEU ' + ctx.message.author.mention + honorifics + ',** You have created a new queue called ' + queueName + ' :heart:')
+
+  @commands.command()
+  async def lqueue(self, ctx):
+      """ Loads a queue already saved. """
+      queueName = ctx.message.content
+
+      if (queueName == "$lqueue" or queueName == ""):
+        await ctx.send('You have to give the name of the queue u want to load b-Baka!')
+      else:
+        queueName = queueName.replace("$lqueue ", "", -1)
+        if os.path.exists(queueName + '.txt'):
+          f = open(queueName + '.txt' , "r")
+          player = self.bot.lavalink.player_manager.get(ctx.guild.id)
+          embed = Embed()
+          embed.color = 10181046
+          embed.title = 'Track Enqueued'
+          
+          counter=0
+            
+          for x in f:
+            query = x.replace("\n", "", -1)
+            query = f'ytsearch:{query}'
+            results = await player.node.get_tracks(query)
+            track = results['tracks'][0]
+            trackSeconds = (track["info"]["length"]) / 1000
+            trackMinutes = int((trackSeconds) /60)
+            trackSeconds = int(trackSeconds - (trackMinutes*60))
+            embed.description = '['+track["info"]["title"]+']('+track["info"]["uri"]+')\n\nLength: '+str(trackMinutes) + ':' + str(trackSeconds) + '\n\nRequested by: [' + ctx.message.author.mention + ']'
+
+            track = lavalink.models.AudioTrack(track, ctx.author.id,recommended=True)
+            player.add(requester=ctx.author.id, track=track)
+            await ctx.send(embed=embed)
+            if counter==0:
+              counter+=1
+              if not player.is_playing:
+                await player.play()
+          
 
 def setup(bot):
     bot.add_cog(music(bot))
