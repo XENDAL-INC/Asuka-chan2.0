@@ -246,6 +246,7 @@ class music(commands.Cog):
 
     player.queue.clear()
     await player.stop()
+    await ctx.message.add_reaction("⛔")
   
   @commands.command(aliases=['die'])
   async def leave(self, ctx):
@@ -268,7 +269,7 @@ class music(commands.Cog):
     await player.stop()
     # Disconnect from the voice channel.
     await ctx.guild.change_voice_state(channel=None)
-    await ctx.message.add_reaction("⛔")
+    await ctx.message.add_reaction("👋")
     await ctx.send('Sorry ' + ctx.message.author.mention + ' Sempai, I hope i was being usefull :cry:')
 
   @commands.command()

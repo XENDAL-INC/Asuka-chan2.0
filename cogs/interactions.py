@@ -94,6 +94,7 @@ class interactions(commands.Cog):
         else:
           await message.channel.send(message.author.mention + ' starts slapping himself')"""
 
+
   @commands.command(aliases=['slaps','bitchslap','bitchslaps'])
   async def slap(self, ctx):
     author=ctx.message.author.name

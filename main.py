@@ -12,14 +12,14 @@ client = commands.Bot(command_prefix='$')
 @client.event
 async def on_ready():
 	client.load_extension('cogs.interactions')
-	client.load_extension('cogs.music')
+	client.load_extension('cogs.tictactoe')
 	print('We have logged in as {0.user}'.format(client))
 	await client.change_presence(status=discord.Status.do_not_disturb,activity=discord.Activity(type=discord.ActivityType.listening,name="XENDAL-Sama"))
 
 
 #commands only possible for XENDAL_INC
 
-@client.command()
+@client.command(hidden=True)
 async def updatepfp(ctx):
   if ctx.author.name=="XENDAL_INC":
     pfp_path = "update/pfp.png"
