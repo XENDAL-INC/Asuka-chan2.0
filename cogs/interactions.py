@@ -147,7 +147,7 @@ class interactions(commands.Cog):
     else:
       await ctx.send(ctx.message.author.mention + honorifics + ' started punching themselves\nhttps://tenor.com/bnBiy.gif')
   
-  @commands.command(aliases=['hugs','cuddle','cuddling'])
+  @commands.command(aliases=['hugs','cuddle','cuddling','brohug'])
   async def hug(self, ctx):
     author=ctx.message.author.name
     if(author=='XENDAL_INC'):
@@ -166,7 +166,10 @@ class interactions(commands.Cog):
         if not str(ctx.message.mentions[0].id) == '842228270400536586':
           mention = '<@'
           mention += str(ctx.message.mentions[0].id) + '>'
-          await ctx.send(ctx.message.author.mention + honorifics + ' started hugging ' + mention + '\n' + random.choice(gif))
+          if "brohug" not in ctx.message.content:
+           await ctx.send(ctx.message.author.mention + honorifics + ' started hugging ' + mention + '\n' + random.choice(gif))
+          else:
+            await ctx.send(ctx.message.author.mention + honorifics + ' started bro hugging ' + mention + '\n' + gif[4])
         else:
           await ctx.send('Heh, that is so creepy that u are ridiculing yourself' + ctx.message.author.mention + honorifics + '~\nhttps://tenor.com/blITm.gif')
         
