@@ -1,4 +1,5 @@
 import discord
+from discord import DMChannel
 from discord.utils import get
 from discord.ext import commands
 from discord import Embed
@@ -212,7 +213,6 @@ class interactions(commands.Cog):
     await ctx.send('**EXPLOSION!!**')
     time.sleep(3)
     await ctx.send('https://media1.tenor.com/images/a5200ff8939402e4e2bbda3a8107d2b1/tenor.gif?itemid=7559840')
-
 
 def setup(bot):
   bot.add_cog(interactions(bot))
