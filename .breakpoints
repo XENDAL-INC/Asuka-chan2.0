@@ -1,0 +1,12 @@
+{
+  "files": {
+    "db/users.json": [
+      {
+        "id": "f8fbd80c-ab78-481a-8b41-d24b70ea8b0a",
+        "line": 1,
+        "version": 275,
+        "index": 0
+      }
+    ]
+  }
+}

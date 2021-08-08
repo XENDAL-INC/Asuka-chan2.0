@@ -5,6 +5,7 @@ from discord.ext import commands
 from discord import Embed
 import time
 import random
+import json
 
 class interactions(commands.Cog):
   def _init_(self, bot):
@@ -108,14 +109,13 @@ class interactions(commands.Cog):
         await ctx.send('HIDOI ' + ctx.author.mention + honorifics + ' :broken_heart:\nhttps://tenor.com/xNYJ.gif')
       
       else:
-        f = open("gifs/slap.txt", "r")
-        gif=[]
-        for x in f:
-          gif.append(x.replace("\n", "", -1))
+        with open('db/gifs/slap.json', 'r') as f:
+          gif = json.load(f)
         if not str(ctx.message.mentions[0].id) == '842228270400536586':
           mention = '<@'
           mention += str(ctx.message.mentions[0].id) + '>'
-          await ctx.send('YOOO, ' + ctx.message.author.mention + honorifics + ' started slapping the shit out of ' + mention + '\n' + random.choice(gif))
+          slap=random.choice(gif['slap'])
+          await ctx.send('YOOO, ' + ctx.message.author.mention + honorifics + ' started slapping the shit out of ' + mention + '\n' + slap['link'])
         else:
           await ctx.send('Heh, nice try' + ctx.message.author.mention + honorifics + '~\nhttps://tenor.com/bBKj0.gif')
         
@@ -134,14 +134,13 @@ class interactions(commands.Cog):
         await ctx.send('HIDOI ' + ctx.author.mention + honorifics + ' :broken_heart:\nhttps://tenor.com/xNYJ.gif')
       
       else:
-        f = open("gifs/punch.txt", "r")
-        gif=[]
-        for x in f:
-          gif.append(x.replace("\n", "", -1))
+        with open('db/gifs/punch.json', 'r') as f:
+          gif = json.load(f)
         if not str(ctx.message.mentions[0].id) == '842228270400536586':
           mention = '<@'
           mention += str(ctx.message.mentions[0].id) + '>'
-          await ctx.send('SUGOI!!!, ' + ctx.message.author.mention + honorifics + ' started punching ' + mention + '\n' + random.choice(gif))
+          punch=random.choice(gif['punch'])
+          await ctx.send('SUGOI!!!, ' + ctx.message.author.mention + honorifics + ' started punching ' + mention + '\n' + punch['link'])
         else:
           await ctx.send('Heh, nice try' + ctx.message.author.mention + honorifics + '~\nhttps://tenor.com/bBKj0.gif')
         
@@ -160,17 +159,18 @@ class interactions(commands.Cog):
         await ctx.send(ctx.author.mention + honorifics + ' b-Baka! s-stop... pls :heart:\nhttps://tenor.com/blkN3.gif')
       
       else:
-        f = open("gifs/hug.txt", "r")
-        gif=[]
-        for x in f:
-          gif.append(x.replace("\n", "", -1))
+        
+        with open('db/gifs/hug.json', 'r') as f:
+          gif = json.load(f)
         if not str(ctx.message.mentions[0].id) == '842228270400536586':
           mention = '<@'
           mention += str(ctx.message.mentions[0].id) + '>'
           if "brohug" not in ctx.message.content:
-           await ctx.send(ctx.message.author.mention + honorifics + ' started hugging ' + mention + '\n' + random.choice(gif))
+            hug=random.choice(gif['hug'])
+            await ctx.send(ctx.message.author.mention + honorifics + ' started hugging ' + mention + '\n' + hug['link'])
           else:
-            await ctx.send(ctx.message.author.mention + honorifics + ' started bro hugging ' + mention + '\n' + gif[4])
+            hug=gif['hug'][4]
+            await ctx.send(ctx.message.author.mention + honorifics + ' started bro hugging ' + mention + '\n' + hug['link'])
         else:
           await ctx.send('Heh, that is so creepy that u are ridiculing yourself' + ctx.message.author.mention + honorifics + '~\nhttps://tenor.com/blITm.gif')
         
