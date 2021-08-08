@@ -4,39 +4,66 @@ from discord.ext import commands
 import os
 from keep_alive import keep_alive
 import time
+import json
+import re
 #import subprocess
 
 #subprocess.run('java -jar Lavalink.jar', shell=True)
+def get_prefix(client, message):
+  try:
+    with open('db/servers.json', 'r') as f:
+      servers = json.load(f)
+    return servers[str(message.guild.id)]['prefix']
+  except:
+    return "$"
+
+
 intents = discord.Intents.all()
-client = commands.Bot(command_prefix=commands.when_mentioned_or('$'), intents=intents)
+client = commands.Bot(command_prefix=get_prefix, intents=intents)
 #client = commands.Bot(command_prefix='$')
+
+
 
 @client.event
 async def on_ready():
   #client.load_extension('cogs.music')
-	client.load_extension('cogs.interactions')
-	client.load_extension('cogs.tictactoe')
-	print('We have logged in as {0.user}'.format(client))
-	await client.change_presence(status=discord.Status.do_not_disturb,activity=discord.Activity(type=discord.ActivityType.listening, name="XENDAL-Sama"))
+  client.load_extension('cogs.levelsystem')
+  client.load_extension('cogs.serverevents')
+  client.load_extension('cogs.interactions')
+  client.load_extension('cogs.tictactoe')
+  print('We have logged in as {0.user}'.format(client))
+  await client.change_presence(status=discord.Status.do_not_disturb,activity=discord.Activity(type=discord.ActivityType.listening, name="XENDAL-Sama"))
   
 
 #commands only possible for XENDAL_INC
 
-@client.event
-async def on_voice_state_update(member, before, after):
-  inVC=False
-  for roles in member.guild.roles:
-    if roles.name=="inVC":
-      inVC=True
-      role=roles
-      break
 
-  if inVC:
-    if not member.voice:
-      await member.remove_roles(role)
+
+"""@client.event
+async def on_message(message):
+    print(message.content)"""
+
+
+@client.command(hidden=True)
+async def prefix(ctx):
+  msg = await ctx.fetch_message(ctx.message.id)
+  with open('db/servers.json', 'r') as f:
+    servers = json.load(f)
+  
+  current_prefix=servers[str(ctx.guild.id)]['prefix']
+  prefix = msg.content.replace(current_prefix + "prefix ", "", -1)
+  prefix = prefix.replace(" ", "", -1)
+  check= re.compile('[@_!#$%^&*()<>?/\|}{~:]')
+  if "prefix" not in prefix:
+    if(check.search(prefix) == None):
+      await ctx.send("sry " + ctx.author.mention + ", but you have typed an invalid prefix, pls try using these symbols:\n[@_!#$%^&*()<>?/\|}{~:]")
     else:
-      await member.add_roles(role)
+      await ctx.send(ctx.author.mention + "the server's prefix have been updated!")
+      servers[str(ctx.guild.id)]['prefix']=str(prefix[0])
 
+  with open('db/servers.json', 'w') as f:
+    json.dump(servers,f)
+      
 @client.command(hidden=True)
 async def updatepfp(ctx):
 	if ctx.author.name == "XENDAL_INC":

@@ -13,10 +13,11 @@ class interactions(commands.Cog):
   @commands.command(aliases=['purge'])
   async def clear(self, ctx, amount=6):
     """ clears a default number of 5 messages if not declared after command. """
-    if not ctx.message.content.replace("$clear", "", -1)=="":
-      amount=int(ctx.message.content.replace("$clear ", "", -1))
-      amount+=1
-    await ctx.channel.purge(limit=amount)
+    if ctx.author.id == 380016239310929931:
+      if not ctx.message.content.replace("$clear", "", -1)=="":
+        amount=int(ctx.message.content.replace("$clear ", "", -1))
+        amount+=1
+      await ctx.channel.purge(limit=amount)
   
   @commands.command()
   async def usrinfo(self, ctx, *,  target : discord.Member=None):
