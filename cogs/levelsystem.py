@@ -47,9 +47,10 @@ async def update_data(users, user, exp, channel):
     try:
       t = users[str(user.id)]
     except:
-      users[user.id]= {}
-      users[user.id]['experience']= 0
-      users[user.id]['level'] = 0
+      if not user.bot:
+        users[user.id]= {}
+        users[user.id]['experience']= 0
+        users[user.id]['level'] = 0
     
 
 def setup(bot):
