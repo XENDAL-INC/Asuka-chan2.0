@@ -1,10 +1,8 @@
 import discord
-from discord.utils import get
 from discord.ext import commands
-from discord import Embed
 import requests
 from bs4 import BeautifulSoup
-
+import asyncio
 
 class Anime:
   type=""
@@ -23,73 +21,7 @@ class Anime:
   link=""
   synopsis=""
 
-def getTextInfo(soup, text):
-  content="N\\A"
-  for anime in soup.findAll('span', {'class': 'dark_text'}):
-    if text in str(anime):
-      if text != "Score":            
-        content=str(anime.nextSibling)
-      else:
-        temp=anime.parent.find('span', {'itemprop': 'ratingValue'})
-        content=str(temp.next_element)
-      content=content.replace("\n ", "", -1)
-      content=content.lstrip(' ')
-      if content=="\n":
-        content=""
-        ct=0
-        for temp in anime.parent.findAll('a'):
-          if ct >= 1:
-            content+=", "
-          content += str(temp.next_element)
-          ct+=1
-      break
-  return content
-
-def getInfo(index, obj):
-  source_code = requests.get(obj[index].link)
-  plain_text = source_code.text
-  soup = BeautifulSoup(plain_text, "html.parser")
-  
-  
-  obj[index].type=getTextInfo(soup, "Type")
-  obj[index].episodes=getTextInfo(soup, "Episodes")
-  obj[index].status=getTextInfo(soup, "Status")
-  obj[index].aired=getTextInfo(soup, "Aired")
-  obj[index].premiered=getTextInfo(soup, "Premiered")
-  obj[index].broadcast=getTextInfo(soup, "Broadcast")
-  obj[index].studios=getTextInfo(soup, "Studios")
-  obj[index].source=getTextInfo(soup, "Source")
-  obj[index].genres=getTextInfo(soup, "Genres")
-  obj[index].duration=getTextInfo(soup, "Duration")
-  obj[index].rating=getTextInfo(soup, "Rating")
-  obj[index].score=getTextInfo(soup, "Score")
-  #for synopsis
-  temp=soup.find('p', {'itemprop': 'description'})
-  for content in temp.contents:
-      if "<br>" and "<br/>" not in str(content):
-          obj[index].synopsis+=str(content)
-
-
-def printAnimeInfo(index, obj):
-  animeTest="\n\n##########################################\n"
-  animeTest+="Title: " + obj[index].title
-  animeTest+="\nType: " + obj[index].type
-  animeTest+="\nEpisodes: " + obj[index].episodes
-  animeTest+="\nStatus: " + obj[index].status
-  animeTest+="\nAired: " + obj[index].aired
-  animeTest+="\nPremiered: " + obj[index].premiered
-  animeTest+="\nBroadcast: " + obj[index].broadcast
-  animeTest+="\nStudios: " + obj[index].studios
-  animeTest+="\nSource: " + obj[index].source
-  animeTest+="\nGenres: " + obj[index].genres
-  animeTest+="\nDuration: " + obj[index].duration
-  animeTest+="\nRating: " + obj[index].rating
-  animeTest+="\nScore: " + obj[index].score
-  animeTest+="\nSynopsis: " + obj[index].synopsis
-  animeTest+="\n##########################################"
-  return animeTest
-
-def searchAnime(url, obj):
+def searchAnimeInfo(url, obj):
   source_code = requests.get(url)
   plain_text = source_code.text
   soup = BeautifulSoup(plain_text, "html.parser")
@@ -146,42 +78,146 @@ def searchSeasonAnime(url, obj):
       break
   return tstring
 
+def getTextInfo(soup, text):
+  content="N\\A"
+  for anime in soup.findAll('span', {'class': 'dark_text'}):
+    if text in str(anime):
+      if text != "Score":            
+        content=str(anime.nextSibling)
+      else:
+        temp=anime.parent.find('span', {'itemprop': 'ratingValue'})
+        content=str(temp.next_element)
+      content=content.replace("\n ", "", -1)
+      content=content.lstrip(' ')
+      if content=="\n":
+        content=""
+        ct=0
+        for temp in anime.parent.findAll('a'):
+          if ct >= 1:
+            content+=", "
+          content += str(temp.next_element)
+          ct+=1
+      break
+  return content
+
+def getInfo(index, obj):
+  source_code = requests.get(obj[index].link)
+  plain_text = source_code.text
+  soup = BeautifulSoup(plain_text, "html.parser")
+  
+  
+  obj[index].type=getTextInfo(soup, "Type")
+  obj[index].episodes=getTextInfo(soup, "Episodes")
+  obj[index].status=getTextInfo(soup, "Status")
+  obj[index].aired=getTextInfo(soup, "Aired")
+  obj[index].premiered=getTextInfo(soup, "Premiered")
+  obj[index].broadcast=getTextInfo(soup, "Broadcast")
+  obj[index].studios=getTextInfo(soup, "Studios")
+  obj[index].source=getTextInfo(soup, "Source")
+  obj[index].genres=getTextInfo(soup, "Genres")
+  obj[index].duration=getTextInfo(soup, "Duration")
+  obj[index].rating=getTextInfo(soup, "Rating")
+  obj[index].score=getTextInfo(soup, "Score")
+  #for synopsis
+  temp=soup.find('p', {'itemprop': 'description'})
+  for content in temp.contents:
+    if "<br>" and "<br/>" not in str(content):
+        obj[index].synopsis+=str(content)
+  obj[index].synopsis=str(obj[index].synopsis.replace("<i>", "***", -1))
+  obj[index].synopsis=str(obj[index].synopsis.replace("</i>", "***", -1))
+
+def printAnimeInfo(index, obj):
+  animeTest="\n\n##########################################\n"
+  animeTest+="Title: " + obj[index].title
+  animeTest+="\nType: " + obj[index].type
+  animeTest+="\nEpisodes: " + obj[index].episodes
+  animeTest+="\nStatus: " + obj[index].status
+  animeTest+="\nAired: " + obj[index].aired
+  animeTest+="\nPremiered: " + obj[index].premiered
+  animeTest+="\nBroadcast: " + obj[index].broadcast
+  animeTest+="\nStudios: " + obj[index].studios
+  animeTest+="\nSource: " + obj[index].source
+  animeTest+="\nGenres: " + obj[index].genres
+  animeTest+="\nDuration: " + obj[index].duration
+  animeTest+="\nRating: " + obj[index].rating
+  animeTest+="\nScore: " + obj[index].score
+  animeTest+="\nSynopsis: " + obj[index].synopsis
+  animeTest+="\n##########################################"
+  return animeTest
+
 class animecrawler(commands.Cog):
-  def _init_(self, bot):
-    self.bot = bot
+  def __init__(self, bot):
+        self.bot = bot
+ 
 
   @commands.command()
   async def searchAnime(self, ctx):
-    obj=[]
-    print("what do u want to do?\n1)Top 10 Most Popular Anime\n2)Current Season Anime\n3)Search for a specific Anime")
-    choice = int(input())
-    if choice == 1:
-      await ctx.send(searchTopAnime("https://myanimelist.net/topanime.php?type=bypopularity", obj))
-      print("\n\nChoose one of the results above for more info.")
-      choice=int(input())
-      choice-=1
-      getInfo(choice, obj)
-      await ctx.send(printAnimeInfo(choice, obj))
-    elif choice == 3:
-      print("pls input the anime u r interested in:")
-      temp=input()
-      search="https://myanimelist.net/search/all?cat=all&q=" + temp.replace(" ", "%20", -1)
-      await ctx.send(searchAnime(search, obj))
-      print("\n\nChoose one of the results above.")
-      choice=int(input())
-      choice-=1
-      getInfo(choice, obj)
-      await ctx.send(printAnimeInfo(choice, obj))
-
-    else:
-      await ctx.send(searchSeasonAnime("https://myanimelist.net/anime/season", obj))
-      print("\n\nChoose one of the results above for more info.")
-      choice=int(input())
-      choice-=1
-      getInfo(choice, obj)
-      await ctx.send(printAnimeInfo(choice, obj))
+    """ Search anime info. """
     
+    currentp=ctx.author.id
+    obj=[]
 
+    def check(m):
+        return m.author.id == currentp and m.channel == ctx.channel
+
+    temp=ctx.message.content.replace("$searchAnime ", "", -1)
+    search="https://myanimelist.net/search/all?cat=all&q=" + temp.replace(" ", "%20", -1)
+    await ctx.send(searchAnimeInfo(search, obj))
+    
+    await ctx.send("Choose one of the results above.")
+    try:
+      response = await self.bot.wait_for("message", check=check, timeout=20)
+    except asyncio.TimeoutError:
+      await ctx.send("Timed Out, you took too much to reply b-baka!")
+      return
+    choice=int(response.content)
+    choice-=1
+    getInfo(choice, obj)
+    await ctx.send(printAnimeInfo(choice, obj))
+            
+  @commands.command()
+  async def topAnime(self, ctx):
+    """ Search Top 10 Anime. """
+    
+    currentp=ctx.author.id
+    obj=[]
+
+    def check(m):
+        return m.author.id == currentp and m.channel == ctx.channel
+    
+    await ctx.send(searchTopAnime("https://myanimelist.net/topanime.php?type=bypopularity", obj))
+    await ctx.send("Choose one of the results above.")
+    try:
+      response = await self.bot.wait_for("message", check=check, timeout=20)
+    except asyncio.TimeoutError:
+      await ctx.send("Timed Out, you took too much to reply b-baka!")
+      return
+    choice=int(response.content)
+    choice-=1
+    getInfo(choice, obj)
+    await ctx.send(printAnimeInfo(choice, obj))
+
+  @commands.command()
+  async def seasonAnime(self, ctx):
+    """ Search current Season Anime. """
+    
+    currentp=ctx.author.id
+    obj=[]
+
+    def check(m):
+        return m.author.id == currentp and m.channel == ctx.channel
+
+    await ctx.send(searchSeasonAnime("https://myanimelist.net/anime/season", obj))
+    await ctx.send("Choose one of the results above.")
+    try:
+      response = await self.bot.wait_for("message", check=check, timeout=20)
+    except asyncio.TimeoutError:
+      await ctx.send("Timed Out, you took too much to reply b-baka!")
+      return
+    choice=int(response.content)
+    choice-=1
+    getInfo(choice, obj)
+    await ctx.send(printAnimeInfo(choice, obj))
 
 def setup(bot):
   bot.add_cog(animecrawler(bot))
