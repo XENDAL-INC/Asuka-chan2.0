@@ -28,6 +28,8 @@ async def on_ready():
   client.load_extension('cogs.interactions')
   client.load_extension('cogs.tictactoe')
   client.load_extension('cogs.serverconfig')
+  client.load_extension('cogs.animecrawler')
+  client.load_extension('cogs.ytubeconverter')
   #client.load_extension('cogs.mastercommands')
   print('We have logged in as {0.user}'.format(client))
   await client.change_presence(status=discord.Status.do_not_disturb,activity=discord.Activity(type=discord.ActivityType.listening, name="XENDAL-Sama"))

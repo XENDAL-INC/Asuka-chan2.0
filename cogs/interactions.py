@@ -76,27 +76,6 @@ class interactions(commands.Cog):
     #await ctx.message.add_reaction("❤️")
     await ctx.send("Yo! My name is Asuka-chan")
 
-  
-  #helps if u want to delete a message
-  """@commands.command()
-  async def delete(self, ctx):
-    await ctx.message.delete()
-    msg = await ctx.send("Deleted. and going to delete this in 2 sec")
-    time.sleep(2)
-    await msg.delete()"""
-
-  #helps if u want to call events or message manipulation
-  """@commands.Cog.listener()
-  async def on_message(self, message):
-    if message.content.startswith('slap'):
-        if message.mentions:
-          mention = '<@'
-          mention += str(message.mentions[0].id) + '>'
-          await message.channel.send(message.author.mention + ' starts slapping ' + mention)
-        else:
-          await message.channel.send(message.author.mention + ' starts slapping himself')"""
-
-
   @commands.command(aliases=['slaps','bitchslap','bitchslaps'])
   async def slap(self, ctx):
     author=ctx.message.author.name

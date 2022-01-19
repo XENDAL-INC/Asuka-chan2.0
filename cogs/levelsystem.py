@@ -21,7 +21,7 @@ class levelsystem(commands.Cog):
       else:
         await member.add_roles(role)
   
-  @commands.Cog.listener()
+  '''@commands.Cog.listener()
   async def on_message(self, message):
     with open('db/users.json', 'r') as f:
       users = json.load(f)
@@ -34,12 +34,12 @@ class levelsystem(commands.Cog):
 async def update_data(users, user, exp, channel):
   try:
     t = users[str(user.id)]
-    users[str(user.id)]['experience'] += 5
+    users[str(user.id)]['experience'] += 1
 
     #lvlup
     experience = users[str(user.id)]['experience']
     lvl_start = users[str(user.id)]['level']
-    lvl_end = int(experience ** (1/4))
+    lvl_end = int(experience ** (1/5))
     if lvl_start < lvl_end:
       await channel.send("GG, " + user.mention + " has leveled up to level " + str(lvl_end) + "!")
       users[str(user.id)]['level'] = lvl_end
@@ -51,7 +51,8 @@ async def update_data(users, user, exp, channel):
         users[user.id]= {}
         users[user.id]['experience']= 0
         users[user.id]['level'] = 0
-    
+        users[user.id]['name'] = user.name
+    '''
 
 def setup(bot):
   bot.add_cog(levelsystem(bot))
