@@ -1,20 +1,3 @@
 {
-  "files": {
-    "cogs/ytubeconverter.py": [
-      {
-        "id": "33fe0e81-ba69-421c-ae5a-f56892b28c5f",
-        "line": 4,
-        "version": 1247,
-        "index": 102
-      }
-    ],
-    "db/users.json": [
-      {
-        "id": "f8fbd80c-ab78-481a-8b41-d24b70ea8b0a",
-        "line": 1,
-        "version": 287,
-        "index": 0
-      }
-    ]
-  }
+  "files": {}
 }
