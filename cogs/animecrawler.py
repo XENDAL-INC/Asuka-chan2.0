@@ -89,7 +89,10 @@ def getTextInfo(soup, text):
         content=str(anime.nextSibling)
       else:
         temp=anime.parent.find('span', {'itemprop': 'ratingValue'})
-        content=str(temp.next_element)
+        try:
+          content=str(temp.next_element)
+        except:
+          content="N/A"
       content=content.replace("\n ", "", -1)
       content=content.lstrip(' ')
       if content=="\n":
@@ -185,7 +188,7 @@ class animecrawler(commands.Cog):
     
     await ctx.send("Choose one of the results above.")
     try:
-      response = await self.bot.wait_for("message", check=check, timeout=30)
+      response = await self.bot.wait_for("message", check=check, timeout=60)
     except asyncio.TimeoutError:
       return
     try:
@@ -219,7 +222,7 @@ class animecrawler(commands.Cog):
             return True
       try:
         emoji="▶️"
-        while await self.bot.wait_for('reaction_add', check=checkReaction, timeout=20):
+        while await self.bot.wait_for('reaction_add', check=checkReaction, timeout=60):
           embedCt*=-1
           await embedMessage.remove_reaction(emoji, userReact)
           if embedCt==1:
@@ -231,7 +234,8 @@ class animecrawler(commands.Cog):
         return
       
       
-    except:
+    except Exception as e:
+      print(e)
       await ctx.send("Invalid response b-baka!")
             
   @commands.command()
@@ -247,7 +251,7 @@ class animecrawler(commands.Cog):
     await ctx.send(searchTopAnime("https://myanimelist.net/topanime.php?type=bypopularity", obj))
     await ctx.send("Choose one of the results above for more info.")
     try:
-      response = await self.bot.wait_for("message", check=check, timeout=30)
+      response = await self.bot.wait_for("message", check=check, timeout=60)
     except asyncio.TimeoutError:
       return
     try:
@@ -281,7 +285,7 @@ class animecrawler(commands.Cog):
             return True
       try:
         emoji="▶️"
-        while await self.bot.wait_for('reaction_add', check=checkReaction, timeout=20):
+        while await self.bot.wait_for('reaction_add', check=checkReaction, timeout=60):
           embedCt*=-1
           await embedMessage.remove_reaction(emoji, userReact)
           if embedCt==1:
@@ -291,7 +295,8 @@ class animecrawler(commands.Cog):
           
       except asyncio.TimeoutError:
         return
-    except:
+    except Exception as e:
+      print(e)
       await ctx.send("Invalid response b-baka!")
 
   @commands.command()
@@ -307,7 +312,7 @@ class animecrawler(commands.Cog):
     await ctx.send(searchSeasonAnime("https://myanimelist.net/anime/season", obj))
     await ctx.send("Choose one of the results above for more info.")
     try:
-      response = await self.bot.wait_for("message", check=check, timeout=30)
+      response = await self.bot.wait_for("message", check=check, timeout=60)
     except asyncio.TimeoutError:
       return
     try:
@@ -341,7 +346,7 @@ class animecrawler(commands.Cog):
             return True
       try:
         emoji="▶️"
-        while await self.bot.wait_for('reaction_add', check=checkReaction, timeout=20):
+        while await self.bot.wait_for('reaction_add', check=checkReaction, timeout=60):
           embedCt*=-1
           await embedMessage.remove_reaction(emoji, userReact)
           if embedCt==1:
@@ -351,7 +356,8 @@ class animecrawler(commands.Cog):
           
       except asyncio.TimeoutError:
         return
-    except:
+    except Exception as e:
+      print(e)
       await ctx.send("Invalid response b-baka!")
 
 def setup(bot):
