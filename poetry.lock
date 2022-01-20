@@ -103,8 +103,37 @@ python-versions = "*"
 "discord.py" = ">=1.0.1"
 
 [[package]]
+name = "discord-components"
+version = "2.1.2"
+description = "An unofficial library for discord components."
+category = "main"
+optional = false
+python-versions = ">=3.6"
+
+[package.dependencies]
+aiohttp = "*"
+"discord.py" = "*"
+
+[package.extras]
+dev = ["black", "flake8", "isort", "sphinx", "sphinx-rtd-theme"]
+lint = ["black", "flake8", "isort", "sphinx", "sphinx-rtd-theme"]
+readthedocs = ["sphinx", "sphinx-rtd-theme"]
+
+[[package]]
+name = "discord-components-paginator"
+version = "1.0.1"
+description = "Button paginator for discord-components library."
+category = "main"
+optional = false
+python-versions = ">=3.6"
+
+[package.dependencies]
+discord-components = "2.1.2"
+"discord.py" = "1.7.3"
+
+[[package]]
 name = "discord.py"
-version = "1.7.2"
+version = "1.7.3"
 description = "A Python wrapper for the Discord API"
 category = "main"
 optional = false
@@ -238,7 +267,7 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "17e7ad538c52cf324ca92c7db48983ee204f0d9a06b30c3df8b36624b7b75138"
+content-hash = "c670a31668b2e607e88b6fbd4d054143ec6b815fcd74d812ea3cbbd8972b3cd4"
 
 [metadata.files]
 aiohttp = [
@@ -288,9 +317,17 @@ discord = [
     {file = "discord-1.0.1-py3-none-any.whl", hash = "sha256:9d4debb4a37845543bd4b92cb195bc53a302797333e768e70344222857ff1559"},
     {file = "discord-1.0.1.tar.gz", hash = "sha256:ff6653655e342e7721dfb3f10421345fd852c2a33f2cca912b1c39b3778a9429"},
 ]
+discord-components = [
+    {file = "discord_components-2.1.2-py3-none-any.whl", hash = "sha256:872930fcce1ee1597acfe011fbc457171589423467830648d3b39ae78775b75a"},
+    {file = "discord_components-2.1.2.tar.gz", hash = "sha256:c80980a29a198a6252fa0a71ae769dba61f11b0d184cbd62def54cc808ae9510"},
+]
+discord-components-paginator = [
+    {file = "discord_components_paginator-1.0.1-py3-none-any.whl", hash = "sha256:022a82bc62006c39880344b020a374ae478a1f5b80209baa8054a77b5d4eba07"},
+    {file = "discord_components_paginator-1.0.1.tar.gz", hash = "sha256:dec1e2f2cd26e485384f56d4e929ea87862120ca0bd1b8fff9352c7b319c54e8"},
+]
 "discord.py" = [
-    {file = "discord.py-1.7.2-py3-none-any.whl", hash = "sha256:f179db299c949a8cf0a12c1b1b94d0da9a18e088857154d93ae5ab1d807ec61d"},
-    {file = "discord.py-1.7.2.tar.gz", hash = "sha256:114e76cd27362fb919abf7f001a2dbdc77c9a67cff74ed6a89aecd6582ee298e"},
+    {file = "discord.py-1.7.3-py3-none-any.whl", hash = "sha256:c6f64db136de0e18e090f6752ea68bdd4ab0a61b82dfe7acecefa22d6477bb0c"},
+    {file = "discord.py-1.7.3.tar.gz", hash = "sha256:462cd0fe307aef8b29cbfa8dd613e548ae4b2cb581d46da9ac0d46fb6ea19408"},
 ]
 flask = [
     {file = "Flask-2.0.0-py3-none-any.whl", hash = "sha256:1833a4b36ace08dfa1510d86f1bb6fc595d990ec1b838e03ac8dd80ac0705954"},

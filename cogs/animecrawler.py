@@ -1,6 +1,7 @@
 import discord
 from discord.ext import commands
 from discord import Embed
+#from discord import Button, ButtonStyle
 import requests
 from bs4 import BeautifulSoup
 import asyncio
@@ -28,7 +29,7 @@ def searchAnimeInfo(url, obj):
   plain_text = source_code.text
   soup = BeautifulSoup(plain_text, "html.parser")
   ct=0 
-  tstring=""  
+  tstring=""
   for link in soup.findAll('a', {'class': 'hoverinfo_trigger fw-b fl-l'}):
     if ct<5:
       temp=Anime()
@@ -36,8 +37,6 @@ def searchAnimeInfo(url, obj):
       temp.title = temp.title.replace("']", "", -1)
       temp.link = link.get('href')
       tstring+="\n**" + str(ct+1) + ")** " + temp.title
-      #thumbnail = soup.findAll('img', {'class': 'lazyloaded'})
-      #temp.thumbnail = thumbnail.get('src')
       obj.append(temp)
       ct+=1
     else:
@@ -122,6 +121,15 @@ def getInfo(index, obj):
   obj[index].duration=getTextInfo(soup, "Duration")
   obj[index].rating=getTextInfo(soup, "Rating")
   obj[index].score=getTextInfo(soup, "Score")
+  #for thumbnail
+  ctThumb=0
+  for images in soup.findAll('img'):
+    if ctThumb==1:
+      thumbnail=images
+      break
+    ctThumb+=1
+  obj[index].thumbnail = thumbnail.get('data-src')
+
   #for synopsis
   temp=soup.find('p', {'itemprop': 'description'})
   for content in temp.contents:
@@ -146,6 +154,7 @@ def printAnimeInfo(index, obj):
   animeTest+="\n**Duration: **" + obj[index].duration
   animeTest+="\n**Rating: **" + obj[index].rating
   animeTest+="\n**Score: **" + obj[index].score
+  animeTest+="\n" + obj[index].link
   #animeTest+="\n**Synopsis: **" + obj[index].synopsis
   #animeTest+="\n##########################################"
   return animeTest
@@ -178,7 +187,6 @@ class animecrawler(commands.Cog):
     try:
       response = await self.bot.wait_for("message", check=check, timeout=30)
     except asyncio.TimeoutError:
-      await ctx.send("Timed Out, you took too much to reply b-baka!")
       return
     try:
       choice=int(response.content)
@@ -187,10 +195,42 @@ class animecrawler(commands.Cog):
       embed = Embed()
       embed.color = 10181046
       embed.title = obj[choice].title
+      embed.set_image(url=obj[choice].thumbnail)
       embed.description=printAnimeInfo(choice, obj)
+      embed.set_footer(text='Page 1/2')
+      synopsisEmbed = Embed()
+      synopsisEmbed.set_footer(text='Page 2/2')
+      synopsisEmbed.color = 10181046
+      synopsisEmbed.title = obj[choice].title
+      synopsisEmbed.description = "**Synopsis: **" + obj[choice].synopsis
       #embed.set_thumbnail(url=obj[choice].thumbnail)
-      #await ctx.send(printAnimeInfo(choice, obj))
-      await ctx.send(embed=embed)
+      embedMessage = await ctx.send(embed=embed)
+      asuka=embedMessage.author
+      await embedMessage.add_reaction("▶️")
+      embedCt=-1
+
+      def checkReaction(reaction, user):
+        global userReact
+        if reaction.message == embedMessage and reaction.emoji=="▶️":
+          if user == asuka:
+            userReact = ctx.author
+          else:
+            userReact=user
+            return True
+      try:
+        emoji="▶️"
+        while await self.bot.wait_for('reaction_add', check=checkReaction, timeout=20):
+          embedCt*=-1
+          await embedMessage.remove_reaction(emoji, userReact)
+          if embedCt==1:
+            await embedMessage.edit(embed=synopsisEmbed)
+          else:
+            await embedMessage.edit(embed=embed)
+          
+      except asyncio.TimeoutError:
+        return
+      
+      
     except:
       await ctx.send("Invalid response b-baka!")
             
@@ -205,11 +245,10 @@ class animecrawler(commands.Cog):
         return m.author.id == currentp and m.channel == ctx.channel
     
     await ctx.send(searchTopAnime("https://myanimelist.net/topanime.php?type=bypopularity", obj))
-    await ctx.send("Choose one of the results above.")
+    await ctx.send("Choose one of the results above for more info.")
     try:
       response = await self.bot.wait_for("message", check=check, timeout=30)
     except asyncio.TimeoutError:
-      await ctx.send("Timed Out, you took too much to reply b-baka!")
       return
     try:
       choice=int(response.content)
@@ -218,10 +257,40 @@ class animecrawler(commands.Cog):
       embed = Embed()
       embed.color = 10181046
       embed.title = obj[choice].title
+      embed.set_image(url=obj[choice].thumbnail)
       embed.description=printAnimeInfo(choice, obj)
+      embed.set_footer(text='Page 1/2')
+      synopsisEmbed = Embed()
+      synopsisEmbed.set_footer(text='Page 2/2')
+      synopsisEmbed.color = 10181046
+      synopsisEmbed.title = obj[choice].title
+      synopsisEmbed.description = "**Synopsis: **" + obj[choice].synopsis
       #embed.set_thumbnail(url=obj[choice].thumbnail)
-      #await ctx.send(printAnimeInfo(choice, obj))
-      await ctx.send(embed=embed)
+      embedMessage = await ctx.send(embed=embed)
+      asuka=embedMessage.author
+      await embedMessage.add_reaction("▶️")
+      embedCt=-1
+
+      def checkReaction(reaction, user):
+        global userReact
+        if reaction.message == embedMessage and reaction.emoji=="▶️":
+          if user == asuka:
+            userReact = ctx.author
+          else:
+            userReact=user
+            return True
+      try:
+        emoji="▶️"
+        while await self.bot.wait_for('reaction_add', check=checkReaction, timeout=20):
+          embedCt*=-1
+          await embedMessage.remove_reaction(emoji, userReact)
+          if embedCt==1:
+            await embedMessage.edit(embed=synopsisEmbed)
+          else:
+            await embedMessage.edit(embed=embed)
+          
+      except asyncio.TimeoutError:
+        return
     except:
       await ctx.send("Invalid response b-baka!")
 
@@ -236,11 +305,10 @@ class animecrawler(commands.Cog):
         return m.author.id == currentp and m.channel == ctx.channel
 
     await ctx.send(searchSeasonAnime("https://myanimelist.net/anime/season", obj))
-    await ctx.send("Choose one of the results above.")
+    await ctx.send("Choose one of the results above for more info.")
     try:
       response = await self.bot.wait_for("message", check=check, timeout=30)
     except asyncio.TimeoutError:
-      await ctx.send("Timed Out, you took too much to reply b-baka!")
       return
     try:
       choice=int(response.content)
@@ -249,10 +317,40 @@ class animecrawler(commands.Cog):
       embed = Embed()
       embed.color = 10181046
       embed.title = obj[choice].title
+      embed.set_image(url=obj[choice].thumbnail)
       embed.description=printAnimeInfo(choice, obj)
+      embed.set_footer(text='Page 1/2')
+      synopsisEmbed = Embed()
+      synopsisEmbed.set_footer(text='Page 2/2')
+      synopsisEmbed.color = 10181046
+      synopsisEmbed.title = obj[choice].title
+      synopsisEmbed.description = "**Synopsis: **" + obj[choice].synopsis
       #embed.set_thumbnail(url=obj[choice].thumbnail)
-      #await ctx.send(printAnimeInfo(choice, obj))
-      await ctx.send(embed=embed)
+      embedMessage = await ctx.send(embed=embed)
+      asuka=embedMessage.author
+      await embedMessage.add_reaction("▶️")
+      embedCt=-1
+
+      def checkReaction(reaction, user):
+        global userReact
+        if reaction.message == embedMessage and reaction.emoji=="▶️":
+          if user == asuka:
+            userReact = ctx.author
+          else:
+            userReact=user
+            return True
+      try:
+        emoji="▶️"
+        while await self.bot.wait_for('reaction_add', check=checkReaction, timeout=20):
+          embedCt*=-1
+          await embedMessage.remove_reaction(emoji, userReact)
+          if embedCt==1:
+            await embedMessage.edit(embed=synopsisEmbed)
+          else:
+            await embedMessage.edit(embed=embed)
+          
+      except asyncio.TimeoutError:
+        return
     except:
       await ctx.send("Invalid response b-baka!")
 
