@@ -29,7 +29,6 @@ async def on_ready():
   client.load_extension('cogs.tictactoe')
   client.load_extension('cogs.serverconfig')
   client.load_extension('cogs.animecrawler')
-  #client.load_extension('cogs.crawlertest')
   client.load_extension('cogs.ytubeconverter')
   #client.load_extension('cogs.mastercommands')
   print('We have logged in as {0.user}'.format(client))
