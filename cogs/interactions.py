@@ -85,21 +85,43 @@ class interactions(commands.Cog):
       honorifics=' Sempai'
     if ctx.message.mentions and ctx.message.author.id!=ctx.message.mentions[0].id:
       if ctx.message.author.name=="XENDAL_INC" and str(ctx.message.mentions[0].id) == '842228270400536586':
-        await ctx.send('HIDOI ' + ctx.author.mention + honorifics + ' :broken_heart:\nhttps://tenor.com/xNYJ.gif')
+        mention = '<@'
+        mention += str(ctx.message.mentions[0].id) + '>'
+        embed=Embed()
+        embed.title="HIDOI!"
+        embed.color=0xdf2020
+        embed.description='*' + ctx.message.author.mention + honorifics + ' made' + mention + ' cry!*'
+        embed.set_image(url="https://c.tenor.com/otSAwjPqcJsAAAAC/sad-cry.gif")
+        await ctx.send(embed=embed)
       
       else:
+        mention = '<@'
+        mention += str(ctx.message.mentions[0].id) + '>'
         with open('db/gifs/slap.json', 'r') as f:
           gif = json.load(f)
         if not str(ctx.message.mentions[0].id) == '842228270400536586':
-          mention = '<@'
-          mention += str(ctx.message.mentions[0].id) + '>'
           slap=random.choice(gif['slap'])
-          await ctx.send('YOOO, ' + ctx.message.author.mention + honorifics + ' started slapping the shit out of ' + mention + '\n' + slap['link'])
+          embed=Embed()
+          embed.title="You gave a slap!"
+          embed.color=0xdf2020
+          embed.description='*YOOO, ' + ctx.message.author.mention + honorifics + ' started slapping the shit out of ' + mention + '!*'
+          embed.set_image(url=slap['link'])
+          await ctx.send(embed=embed)
         else:
-          await ctx.send('Heh, nice try' + ctx.message.author.mention + honorifics + '~\nhttps://tenor.com/bBKj0.gif')
+          embed=Embed()
+          embed.title="Heh. nice try!"
+          embed.color=0xdf2020
+          embed.description= "*" + ctx.message.author.mention + honorifics + " failed miserably to slap " + mention + "!*"
+          embed.set_image(url="https://c.tenor.com/XN4eaRmwtkQAAAAC/nobara-kugisaki-nobara.gif")
+          await ctx.send(embed=embed)
         
     else:
-      await ctx.send(ctx.message.author.mention + honorifics + ' started slapping themselves\nhttps://tenor.com/biv57.gif')
+      embed=Embed()
+      embed.title="Are you... ok?!"
+      embed.color=0xdf2020
+      embed.description= "*" + ctx.message.author.mention + honorifics + " started slapping themselves!*"
+      embed.set_image(url="https://c.tenor.com/IVA2Go3aoAkAAAAC/pichu-pickachu.gif")
+      await ctx.send(embed=embed)
   
   @commands.command(aliases=['hit', 'hits', 'jab', 'jabs', 'fight', 'fights', 'punches'])
   async def punch(self, ctx):
