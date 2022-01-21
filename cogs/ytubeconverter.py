@@ -2,12 +2,12 @@ import discord
 from discord.ext import commands
 from pytube import YouTube
 from pytube import Playlist
+from discord import FFmpegPCMAudio
 import shutil
 
 class ytubeconverter(commands.Cog):
   def _init_(self, bot):
     self.bot = bot
-
 
 
   @commands.command()

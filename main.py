@@ -22,7 +22,7 @@ client = commands.Bot(command_prefix=get_prefix, intents=intents)
 
 @client.event
 async def on_ready():
-  #client.load_extension('cogs.music')
+  client.load_extension('cogs.music')
   client.load_extension('cogs.levelsystem')
   client.load_extension('cogs.serverevents')
   client.load_extension('cogs.interactions')
