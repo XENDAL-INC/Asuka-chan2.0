@@ -9,16 +9,46 @@ import re
 import shutil
 
 
+
+queues={}
+
 def convert(video, title, outPath):
   illegalChar=["#","%","&","{","}","<",">","*","/","?","\\"]
   for char in illegalChar:
     title=title.replace(char,"",-2)
   video=video.streams.filter(only_audio=True)
   try:
-    video[int(video.count())-2].download(filename=".mp3", filename_prefix=title, output_path=outPath)
+    video[int(len(video)-2)].download(filename=".mp3", filename_prefix=title, output_path=outPath)
   except Exception as e:
     print(e)
   return title
+
+def check_queue(ctx, id, voice):
+  try:
+    if queues[id] != []:
+      queues[id].pop(0)
+      if queues[id] != []:
+        source=queues[id][0]
+        
+        print("Next Song: " + str(source))
+        try:
+          player = voice.play(source, after=lambda x=None: check_queue(ctx, id, voice))
+        except Exception as e:
+          print(e)
+      else:
+        voice.stop()
+        queues.pop(int(id))
+        outPath="db/music/" + str(id)
+        shutil.rmtree(outPath)
+        return
+    else:
+      voice.stop()
+      queues.pop(int(id))
+      outPath="db/music/" + str(id)
+      shutil.rmtree(outPath)
+  except:
+    return
+
 
 class music(commands.Cog):
   def __init__(self, bot):
@@ -26,18 +56,27 @@ class music(commands.Cog):
  
 
   @commands.command(aliases=['p'])
-  async def play(self, ctx):
+  async def play(self, ctx, *, args):
     """" Searches and plays a song or playlist from YouTube. """
     if ctx.author.voice:
+      guild_id=ctx.message.guild.id
+
       try:
         channel = ctx.message.author.voice.channel
-        voice = await channel.connect()
+        voice=ctx.guild.voice_client
+        try:
+          voice = await channel.connect()
+        except:
+          print("")
         
         ###############################################
         #strip command from message content#
-        if not ctx.message.content.replace("$p", "", -1)=="":
-          url=str(ctx.message.content.replace("$p ", "", -1))
-        outPath="db/music/" + str(ctx.author.id)
+        try:
+          url=args
+        except:
+          await ctx.send("pls don't waste my time, next time remember to write the vide you want to play b-baka!")
+          return
+        outPath="db/music/" + str(ctx.guild.id)
         
         ################################################
         #return results from youtube if not url
@@ -46,7 +85,6 @@ class music(commands.Cog):
           html = urllib.request.urlopen(search)
           video_ids = re.findall(r"watch\?v=(\S{11})", html.read().decode())
           url="https://www.youtube.com/watch?v=" + video_ids[0]
-          print(url)
 
         #################################################
         #download video and setup embed
@@ -63,7 +101,6 @@ class music(commands.Cog):
           embed.set_thumbnail(url=video.thumbnail_url)
           description="["+title+"]("+video.embed_url+")\n\nLength: "+trackMin+":"+trackSec+"\n\nRequested by: ["+ctx.author.mention+"]"
           embed.description=description
-          await ctx.send(embed=embed)
           title=convert(video, title, outPath)
           
         except Exception as e:
@@ -73,7 +110,21 @@ class music(commands.Cog):
         ###############################################
         
         source=FFmpegPCMAudio(outPath + "//" + title + ".mp3")
-        player=voice.play(source)
+        
+        
+        if guild_id in queues:
+          queues[guild_id].append(source)
+        else:
+          queues[guild_id] = [source]
+          try:
+            player=voice.play(source, after=lambda x=None: check_queue(ctx, guild_id, voice))
+          except Exception as e:
+            print(e)
+            return
+          
+        
+        await ctx.send(embed=embed)
+        
       except Exception as e:
         print(e)
         return
@@ -121,6 +172,13 @@ class music(commands.Cog):
     try:
       msg=ctx.message
       if ctx.voice_client:
+        
+        try:
+          queues.pop(int(ctx.guild.id))
+          outPath="db/music/" + str(ctx.guild.id)
+          shutil.rmtree(outPath)
+        except:
+          print("")
         await msg.add_reaction("👋")
         await ctx.send('Sorry ' + msg.author.mention + ' Sempai, I hope i was being usefull :cry:')
         await ctx.guild.voice_client.disconnect()
@@ -131,10 +189,15 @@ class music(commands.Cog):
       return
   
   @commands.command()
-  async def isplaying(self, ctx):
+  async def isplaying(self, ctx, *, args):
     """ Pauses Player. """
+    try:
+      await ctx.send(args)
+    except:
+      await ctx.send("there was no text after command")
     #query = args.strip('<>')
     #await ctx.send(str(query))
+    return
     try:
       global msg
       msg=ctx.message
@@ -148,6 +211,38 @@ class music(commands.Cog):
     except Exception as e:
       print(e)
       return
+
+  @commands.command()
+  async def queue(self, ctx):
+    """ Print Queue """
+    guild_id=ctx.message.guild.id
+    await ctx.send(str(queues))
+
+  @commands.command()
+  async def skip(self, ctx):
+    """ skip """
+    guild_id=ctx.message.guild.id
+    if guild_id in queues:
+      try:
+        if queues[guild_id]!=[]:
+          voice=ctx.guild.voice_client
+          try:
+            source=queues[guild_id][1]
+          except:
+            voice.stop()
+            queues.pop(int(guild_id))
+            outPath="db/music/" + str(guild_id)
+            shutil.rmtree(outPath)
+
+          voice.stop()
+          player=voice.play(source, after=lambda x=None: check_queue(ctx, guild_id, voice))
+        else:
+          queues.pop(int(guild_id))
+          voice.stop()
+      except Exception as e:
+        print(e)
+        return
+
 
 
 def setup(bot):
