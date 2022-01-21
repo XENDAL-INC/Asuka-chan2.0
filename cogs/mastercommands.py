@@ -45,13 +45,12 @@ class mastercommands(commands.Cog):
           await DMChannel.send(mentioned, msg + temp)
 
   @commands.command(hidden=True)
-  async def sendDMbyID(self, ctx):
+  async def sendDMbyID(self, ctx, *, args):
     if ctx.author.name == "XENDAL_INC":
       #temp = ctx.author.id;
       user = self.bot.fetch_user(ctx.author.id)
-      if not ctx.message.content.replace("$sendDMbyID", "",-1)=="" or ctx.message.content.replace("$sendDMbyID", "",-1)==" ":
-        dmID = ctx.message.content.replace("$sendDMbyID", "",-1)
-        dmID = dmID.replace(" ", "",-1)
+      if not args=="" and args==" ":
+        dmID = args
         #await ctx.message.delete
         msg=""
         dmfeedback = await DMChannel.send(user, "pls procede and type the message u want to send MASTER!")

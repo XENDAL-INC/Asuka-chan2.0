@@ -11,7 +11,7 @@ class ytubeconverter(commands.Cog):
 
 
   @commands.command()
-  async def ytconv(self, ctx):
+  async def ytconv(self, ctx, *, args):
     """ converts youtube vid to .mp3. """
     illegalChar=["#","%","&","{","}","<",">","*","/","?","\\"]
     def convert(video, title, outPath):
@@ -26,8 +26,7 @@ class ytubeconverter(commands.Cog):
         title="output"
       return title
 
-    if not ctx.message.content.replace("$ytconv", "", -1)=="":
-      url=str(ctx.message.content.replace("$ytconv ", "", -1))
+    url=args
 
     outPath="db/vidConverter/" + str(ctx.author.id)
 

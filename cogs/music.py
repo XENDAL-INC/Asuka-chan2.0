@@ -8,8 +8,6 @@ import urllib.request
 import re
 import shutil
 
-
-
 queues={}
 
 def convert(video, title, outPath):

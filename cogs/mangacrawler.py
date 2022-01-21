@@ -150,7 +150,7 @@ class mangacrawler(commands.Cog):
  
 
   @commands.command()
-  async def searchManga(self, ctx):
+  async def searchManga(self, ctx, *, args):
     """ Search Manga info. """
     
     currentp=ctx.author.id
@@ -160,9 +160,9 @@ class mangacrawler(commands.Cog):
     def check(m):
         return m.author.id == currentp and m.channel == ctx.channel
 
-    if not ctx.message.content.replace("$searchManga", "", -1)=="":
-      temp=str(ctx.message.content.replace("$searchManga ", "", -1))
-    if temp=="":
+    try:
+      temp=args
+    except:
       await ctx.send("pls don't waste my time, next time remember to write what manga you want to search b-baka")
       return
     search="https://myanimelist.net/manga.php?cat=manga&q=" + temp.replace(" ", "%20", -1)

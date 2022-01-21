@@ -168,7 +168,7 @@ class animecrawler(commands.Cog):
  
 
   @commands.command()
-  async def searchAnime(self, ctx):
+  async def searchAnime(self, ctx, *, args):
     """ Search Anime info. """
     
     currentp=ctx.author.id
@@ -178,11 +178,12 @@ class animecrawler(commands.Cog):
     def check(m):
         return m.author.id == currentp and m.channel == ctx.channel
 
-    if not ctx.message.content.replace("$searchAnime", "", -1)=="":
-      temp=str(ctx.message.content.replace("$searchAnime ", "", -1))
-    if temp=="":
+    try:
+      temp=args
+    except:
       await ctx.send("pls don't waste my time, next time remember to write what anime you want to search b-baka")
       return
+      
     search="https://myanimelist.net/search/all?cat=all&q=" + temp.replace(" ", "%20", -1)
     await ctx.send(searchAnimeInfo(search, obj))
     
