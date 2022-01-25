@@ -19,10 +19,10 @@ class ytubeconverter(commands.Cog):
         title=title.replace(char,"",-1)
       video=video.streams.filter(only_audio=True)
       try:
-        video[int(video.count())-1].download(filename=".mp3", filename_prefix=title, output_path=outPath)
+        video[int(len(video))-1].download(filename=".mp3", filename_prefix=title, output_path=outPath)
       except Exception as e:
         print(e)
-        video[int(video.count())-1].download(filename=".mp3", output_path=outPath, filename_prefix="output")
+        video[int(len(video))-1].download(filename=".mp3", output_path=outPath, filename_prefix="output")
         title="output"
       return title
 

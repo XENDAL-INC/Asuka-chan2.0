@@ -214,21 +214,6 @@ MarkupSafe = ">=2.0.0rc2"
 i18n = ["Babel (>=2.7)"]
 
 [[package]]
-name = "lavalink"
-version = "3.1.4"
-description = "A lavalink interface built for discord.py"
-category = "main"
-optional = false
-python-versions = "*"
-
-[package.dependencies]
-aiohttp = ">=3.6.0,<3.7.0"
-
-[package.extras]
-development = ["pylint", "flake8"]
-docs = ["sphinx", "pygments", "guzzle-sphinx-theme"]
-
-[[package]]
 name = "markupsafe"
 version = "2.0.0"
 description = "Safely add untrusted strings to HTML/XML markup."
@@ -309,7 +294,7 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "dec08af4bb9fb32d0e4fc0a3530813b77e143b2c6efe480c31866d3e4998a73e"
+content-hash = "d4ad1aacc95a67d207c0ee94734555c1e8fe222a0cffa83123d7b60d20f08c98"
 
 [metadata.files]
 aiohttp = [
@@ -441,9 +426,6 @@ itsdangerous = [
 jinja2 = [
     {file = "Jinja2-3.0.0-py3-none-any.whl", hash = "sha256:2f2de5285cf37f33d33ecd4a9080b75c87cd0c1994d5a9c6df17131ea1f049c6"},
     {file = "Jinja2-3.0.0.tar.gz", hash = "sha256:ea8d7dd814ce9df6de6a761ec7f1cac98afe305b8cdc4aaae4e114b8d8ce24c5"},
-]
-lavalink = [
-    {file = "lavalink-3.1.4.tar.gz", hash = "sha256:c030488391e27cdc1e3ee3093817c38848ebd0d1c7bcf0d6cd0f40b9b00a4e0c"},
 ]
 markupsafe = [
     {file = "MarkupSafe-2.0.0-cp36-cp36m-macosx_10_9_x86_64.whl", hash = "sha256:2efaeb1baff547063bad2b2893a8f5e9c459c4624e1a96644bbba08910ae34e0"},
