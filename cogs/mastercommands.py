@@ -1,5 +1,5 @@
-from discord import DMChannel
-from discord.ext import commands
+from nextcord import DMChannel
+from nextcord.ext import commands
 import time
 
 class mastercommands(commands.Cog):

@@ -1,9 +1,9 @@
-import discord
-from discord.ext import commands
+import nextcord
+from nextcord.ext import commands
 from pytube import YouTube
 from pytube import Playlist
-from discord import FFmpegPCMAudio
-from discord import Embed
+from nextcord import FFmpegPCMAudio
+from nextcord import Embed
 import urllib.request
 import re
 import shutil
@@ -136,7 +136,7 @@ class music(commands.Cog):
       global msg
       msg=ctx.message
       #await msg.add_reaction("⏸️")
-      player=discord.utils.get(self.bot.voice_clients,guild=ctx.guild)
+      player=nextcord.utils.get(self.bot.voice_clients,guild=ctx.guild)
       
       if player.is_playing():
         await msg.add_reaction("⏸️")
@@ -153,7 +153,7 @@ class music(commands.Cog):
     try:
       global msg
       msg=ctx.message
-      player=discord.utils.get(self.bot.voice_clients,guild=ctx.guild)
+      player=nextcord.utils.get(self.bot.voice_clients,guild=ctx.guild)
       
       if player.is_paused():
         await msg.add_reaction("▶️")
@@ -200,7 +200,7 @@ class music(commands.Cog):
       global msg
       msg=ctx.message
       #await msg.add_reaction("⏸️")
-      player=discord.utils.get(self.bot.voice_clients,guild=ctx.guild)
+      player=nextcord.utils.get(self.bot.voice_clients,guild=ctx.guild)
       
       if not player.is_playing():
         await ctx.send("The player stopped playing!")

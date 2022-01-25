@@ -1,8 +1,8 @@
-import discord
-from discord import DMChannel
-from discord.utils import get
-from discord.ext import commands
-from discord import Embed
+import nextcord
+from nextcord import DMChannel
+from nextcord.utils import get
+from nextcord.ext import commands
+from nextcord import Embed
 import time
 import random
 import json
@@ -20,12 +20,12 @@ class interactions(commands.Cog):
     await ctx.channel.purge(limit=amount)
   
   @commands.command()
-  async def usrinfo(self, ctx, *,  target : discord.Member=None):
+  async def usrinfo(self, ctx, *,  target : nextcord.Member=None):
     """ Display mentioned user's info. """
     if not ctx.message.mentions:
       target = ctx.author
     
-    embed = discord.Embed()
+    embed = nextcord.Embed()
     embed.title = "User Info"
     embed.set_thumbnail(url=target.avatar_url)
     fields=[("ID", target.id, False),
@@ -41,7 +41,7 @@ class interactions(commands.Cog):
     await ctx.send(embed=embed)
 
   @commands.command()
-  async def avatar(self, ctx, *,  target : discord.Member=None):
+  async def avatar(self, ctx, *,  target : nextcord.Member=None):
     """ Display mentioned user's avatar. """
     if not ctx.message.mentions:
       target = ctx.author

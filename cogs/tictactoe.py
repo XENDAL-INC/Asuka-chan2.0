@@ -1,5 +1,5 @@
-import discord
-from discord.ext import commands
+import nextcord
+from nextcord.ext import commands
 import random
 
 class tictactoe(commands.Cog):
@@ -8,7 +8,7 @@ class tictactoe(commands.Cog):
  
 
   @commands.command()
-  async def startXO(self, ctx, *,  target : discord.Member=None):
+  async def startXO(self, ctx, *,  target : nextcord.Member=None):
     """ Start a tic tac toe game with a mentioned user. """
     if not ctx.message.mentions:
       await ctx.send("You have to mention someone else in order to play... or do u want to play by yourself?\nhttps://tenor.com/9yK4.gif")

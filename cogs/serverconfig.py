@@ -1,7 +1,7 @@
-import discord
-from discord import DMChannel
-from discord.utils import get
-from discord.ext import commands
+import nextcord
+from nextcord import DMChannel
+from nextcord.utils import get
+from nextcord.ext import commands
 import json
 import re
 

@@ -1,7 +1,7 @@
-import discord
-from discord.ext import commands
-from discord import Embed
-#from discord import Button, ButtonStyle
+import nextcord
+from nextcord.ext import commands
+from nextcord import Embed
+#from nextcord import Button, ButtonStyle
 import requests
 from bs4 import BeautifulSoup
 import asyncio

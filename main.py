@@ -1,6 +1,6 @@
-import discord
-from discord import DMChannel
-from discord.ext import commands
+import nextcord
+from nextcord import DMChannel
+from nextcord.ext import commands
 import os
 from keep_alive import keep_alive
 import time
@@ -17,7 +17,7 @@ def get_prefix(client, message):
     return "$"
 
 
-intents = discord.Intents.all()
+intents = nextcord.Intents.all()
 client = commands.Bot(command_prefix=get_prefix, intents=intents)
 
 @client.event
@@ -33,7 +33,7 @@ async def on_ready():
   client.load_extension('cogs.ytubeconverter')
   #client.load_extension('cogs.mastercommands')
   print('We have logged in as {0.user}'.format(client))
-  await client.change_presence(status=discord.Status.do_not_disturb,activity=discord.Activity(type=discord.ActivityType.listening, name="XENDAL-Sama"))
+  await client.change_presence(status=nextcord.Status.do_not_disturb,activity=nextcord.Activity(type=nextcord.ActivityType.listening, name="XENDAL-Sama"))
   
 
 #commands only possible for XENDAL_INC

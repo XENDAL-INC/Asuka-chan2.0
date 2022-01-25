@@ -1,8 +1,8 @@
-import discord
-from discord.ext import commands
+import nextcord
+from nextcord.ext import commands
 from pytube import YouTube
 from pytube import Playlist
-from discord import FFmpegPCMAudio
+from nextcord import FFmpegPCMAudio
 import shutil
 
 class ytubeconverter(commands.Cog):
@@ -37,7 +37,7 @@ class ytubeconverter(commands.Cog):
           await ctx.send("Conversion in progress, pls wait...")
           title=video.title
           title=convert(video, title, outPath)
-          await ctx.send(file=discord.File(outPath + "//" + title + ".mp3"))
+          await ctx.send(file=nextcord.File(outPath + "//" + title + ".mp3"))
           await ctx.send('Finished Conversion of "' + title + '"')
       except:
           await ctx.send("An error has occured, make sure that the link is valid and try again")
@@ -48,7 +48,7 @@ class ytubeconverter(commands.Cog):
         await ctx.send("Conversion in progress, pls wait...")
         title=convert(video, title, outPath)
         
-        await ctx.send(file=discord.File(outPath + "//" + title + ".mp3"))
+        await ctx.send(file=nextcord.File(outPath + "//" + title + ".mp3"))
         await ctx.send('Finished Conversion of "' + title + '"')
       except Exception as e:
         print(e)
