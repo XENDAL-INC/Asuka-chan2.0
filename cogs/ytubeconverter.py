@@ -37,6 +37,7 @@ class ytubeconverter(commands.Cog):
           await ctx.send("Conversion in progress, pls wait...")
           title=video.title
           title=convert(video, title, outPath)
+          await ctx.send("lmao")
           await ctx.send(file=nextcord.File(outPath + "//" + title + ".mp3"))
           await ctx.send('Finished Conversion of "' + title + '"')
       except:

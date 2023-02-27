@@ -1,0 +1,23 @@
+{
+    "statuses": [{
+        "id": 1,
+        "name": "Bleed",
+        "dmg": 5,
+        "inhibit": false
+    }, {
+        "id": 2,
+        "name": "Poison",
+        "dmg": 10,
+        "inhibit": false
+    }, {
+        "id": 3,
+        "name": "Stun",
+        "dmg": 0,
+        "inhibit": true
+    }, {
+        "id": 4,
+        "name": "Silence",
+        "dmg": 0,
+        "inhibit": true
+    }]
+}

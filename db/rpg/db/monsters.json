@@ -1,0 +1,55 @@
+{
+    "monsters": [{
+        "id":
+        12345,
+        "name":
+        "Alice",
+        "class":
+        "Fire",
+        "level":
+        10,
+        "experience":
+        5000,
+        "hp":
+        120,
+        "atk":
+        70,
+        "defense":
+        60,
+        "speed":
+        50,
+        "evasion":
+        20,
+        "accuracy":
+        80,
+        "attacks": ["flame strike", "fireball", "burning blade", "heat wave"],
+        "status":
+        null
+    }, {
+        "id":
+        23456,
+        "name":
+        "Charlie",
+        "class":
+        "Ice",
+        "level":
+        12,
+        "experience":
+        8000,
+        "hp":
+        100,
+        "atk":
+        80,
+        "defense":
+        50,
+        "speed":
+        90,
+        "evasion":
+        50,
+        "accuracy":
+        70,
+        "attacks": ["frost nova", "ice shard", "icy blast", "frozen arrow"],
+        "status":
+        null
+    }]
+}
