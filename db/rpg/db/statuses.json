@@ -1,12 +1,12 @@
 {
     "statuses": [{
         "id": 1,
-        "name": "Bleed",
-        "dmg": 5,
-        "inhibit": false
+        "name": "Freeze",
+        "dmg": 0,
+        "inhibit": true
     }, {
         "id": 2,
-        "name": "Poison",
+        "name": "Burn",
         "dmg": 10,
         "inhibit": false
     }, {
@@ -16,8 +16,13 @@
         "inhibit": true
     }, {
         "id": 4,
-        "name": "Silence",
+        "name": "Fear",
         "dmg": 0,
         "inhibit": true
+    }, {
+        "id": 5,
+        "name": "Bleed",
+        "dmg": 10,
+        "inhibit": false
     }]
 }

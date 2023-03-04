@@ -2,7 +2,7 @@ import nextcord
 from nextcord import DMChannel
 from nextcord.ext import commands
 import os
-#from keep_alive import keep_alive
+from keep_alive import keep_alive
 import time
 import json
 
@@ -31,8 +31,8 @@ client = commands.Bot(command_prefix=get_prefix, intents=intents)
 
 @client.event
 async def on_ready():
-    client.load_extension('cogs.Music')
-    #client.load_extension('cogs.levelsystem')
+    client.load_extension('cogs.music')
+    client.load_extension('cogs.levelsystem')
     client.load_extension('cogs.serverevents')
     client.load_extension('cogs.interactions')
     client.load_extension('cogs.tictactoe')
@@ -47,15 +47,16 @@ async def on_ready():
     client.load_extension('cogs.animecrawler')
     client.load_extension('cogs.mangacrawler')
     client.load_extension('cogs.ytubeconverter')
+    client.load_extension('cogs.RPGCommands')
     #client.load_extension('cogs.slashcommands')
-    client.load_extension('cogs.keep_alive')
+    #client.load_extension('cogs.keep_alive')
     #client.load_extension('cogs.test')
     #client.load_extension('cogs.mastercommands')
     print('We have logged in as {0.user}'.format(client))
-    #await client.change_presence(status=nextcord.Status.do_not_disturb,
-    #activity=nextcord.Activity(
-    #type=nextcord.ActivityType.listening,
-    #name="XENDAL-Sama"))
+    await client.change_presence(status=nextcord.Status.do_not_disturb,
+                                 activity=nextcord.Activity(
+                                     type=nextcord.ActivityType.listening,
+                                     name="XENDAL-Sama"))
 
 
 #commands only possible for XENDAL_INC
@@ -139,5 +140,5 @@ async def sendDMbyID(ctx):
             await dmfeedback.delete()
 
 
-#keep_alive()
+keep_alive()
 client.run(os.getenv('TOKEN'))

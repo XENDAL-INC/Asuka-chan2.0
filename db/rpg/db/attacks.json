@@ -1,16 +1,29 @@
 {
     "types": [{
         "id":
-        1,
+        0,
         "name":
-        "fire",
+        "Fire",
         "attacks": [{
-            "id": 1,
-            "name": "Flamethrower",
+            "id": 0,
+            "name": "Ignite",
+            "lvl": 0,
             "description":
-            "The target is scorched with an intense blast of fire. May leave the target with a burn.",
+            "Sets the target on fire, dealing mild fire damage.",
             "accuracy": 100,
-            "power": 90,
+            "power": 30,
+            "status": {
+                "name": null,
+                "chance": null
+            }
+        }, {
+            "id": 1,
+            "name": "Ember Burst",
+            "lvl": 1,
+            "description":
+            "Releases a burst of embers that deals mild fire damage.",
+            "accuracy": 100,
+            "power": 40,
             "status": {
                 "name": "Burn",
                 "chance": 10
@@ -18,16 +31,28 @@
         }]
     }, {
         "id":
-        2,
+        1,
         "name":
-        "ice",
+        "Ice",
         "attacks": [{
-            "id": 2,
-            "name": "Ice Beam",
-            "description":
-            "The target is struck with an icy-cold beam of energy. May freeze the target.",
+            "id": 0,
+            "name": "Frostbite",
+            "lvl": 0,
+            "description": "Freezes the target, dealing mild ice damage.",
             "accuracy": 100,
-            "power": 90,
+            "power": 30,
+            "status": {
+                "name": null,
+                "chance": null
+            }
+        }, {
+            "id": 1,
+            "name": "Ice Shard",
+            "lvl": 1,
+            "description":
+            "Fires a small shard of ice, dealing mild ice damage to the target.",
+            "accuracy": 100,
+            "power": 40,
             "status": {
                 "name": "Freeze",
                 "chance": 10
@@ -35,18 +60,61 @@
         }]
     }, {
         "id":
+        2,
+        "name":
+        "Thunder",
+        "attacks": [{
+            "id": 0,
+            "name": "Spark",
+            "lvl": 0,
+            "description":
+            "Releases a small spark of lightning, dealing mild thunder damage.",
+            "accuracy": 100,
+            "power": 30,
+            "status": {
+                "name": null,
+                "chance": null
+            }
+        }, {
+            "id": 1,
+            "name": "Shocking Grasp",
+            "lvl": 1,
+            "description":
+            "Delivers a shock to the target, dealing mild thunder damage and might paralyze them temporarily.",
+            "accuracy": 100,
+            "power": 40,
+            "status": {
+                "name": "Stun",
+                "chance": 10
+            }
+        }]
+    }, {
+        "id":
         3,
         "name":
-        "thunder",
+        "Wind",
         "attacks": [{
-            "id": 3,
-            "name": "Thunderbolt",
+            "id": 0,
+            "name": "Gust",
+            "lvl": 0,
             "description":
-            "A strong electric blast is loosed at the target. May paralyze the target.",
+            "A simple blast of wind that deals mild damage to a single target.",
             "accuracy": 100,
-            "power": 90,
+            "power": 30,
             "status": {
-                "name": "Paralysis",
+                "name": null,
+                "chance": null
+            }
+        }, {
+            "id": 1,
+            "name": "Cyclone Slash",
+            "lvl": 1,
+            "description":
+            "Charges the user's hand with wind, launching enemies into the air on hit dealing mild wind damage that might cause bleeding",
+            "accuracy": 100,
+            "power": 40,
+            "status": {
+                "name": "Bleed",
                 "chance": 10
             }
         }]
@@ -54,34 +122,30 @@
         "id":
         4,
         "name":
-        "wind",
+        "Dark",
         "attacks": [{
-            "id": 4,
-            "name": "Gust",
+            "id": 0,
+            "name": "Shadow Bolt",
+            "lvl": 0,
             "description":
-            "A gust of wind is whipped up by wings and launched at the target to inflict damage.",
+            "A bolt of dark energy that deals low dark damage to a single target.",
             "accuracy": 100,
-            "power": 40,
+            "power": 30,
             "status": {
                 "name": null,
                 "chance": null
             }
-        }]
-    }, {
-        "id":
-        5,
-        "name":
-        "dark",
-        "attacks": [{
-            "id": 5,
-            "name": "Faint Attack",
+        }, {
+            "id": 1,
+            "name": "Dark Strike",
+            "lvl": 1,
             "description":
-            "The user approaches the target disarmingly, then throws a sucker punch. It hits without fail.",
-            "accuracy": null,
-            "power": 60,
+            "Cloaks the user into a veil of darkness to launch a surprise attack dealing mild dark damage that might cause fear",
+            "accuracy": 100,
+            "power": 40,
             "status": {
-                "name": "Flinch",
-                "chance": 100
+                "name": "Fear",
+                "chance": 10
             }
         }]
     }]

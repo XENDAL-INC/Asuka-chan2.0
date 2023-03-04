@@ -30,7 +30,7 @@ class interactions(commands.Cog):
 
         embed = nextcord.Embed()
         embed.title = "User Info"
-        embed.set_thumbnail(url=target.avatar_url)
+        #embed.set_thumbnail(url=target.avatar_url)
         fields = [
             ("ID", target.id, False),
             ("Name", str(target), True),

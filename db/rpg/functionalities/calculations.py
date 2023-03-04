@@ -72,3 +72,13 @@ def ifHit(attacker_acc, defender_eva):
 def calc_accuracy(attack_acc, modifier):
     accuracy = (attack_acc / 100 * 3 / 4) * (1 + (modifier / 100))
     return min(1.0, accuracy)
+
+
+def calc_hp(base_hp, lvl):
+    new_hp = (0.01 * (2 * 66) * 0.25 * (base_hp * 6) * lvl) + lvl + 10
+    return int(new_hp)
+
+
+def calc_stat(base_stat, lvl):
+    new_stat = (0.01 * (2 * 66) * 0.25 * (base_stat * 6) * lvl) + 5
+    return int(new_stat)

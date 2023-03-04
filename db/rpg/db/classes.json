@@ -1,48 +1,98 @@
 {
     "classes": [{
-        "id": 1,
-        "name": "Fire",
-        "hp": 100,
-        "atk": 80,
-        "defense": 50,
-        "speed": 60,
-        "evasion": 30,
-        "accuracy": 70
+        "id":
+        1,
+        "name":
+        "Fire",
+        "hp":
+        100,
+        "atk":
+        120,
+        "defense":
+        80,
+        "speed":
+        100,
+        "evasion":
+        0,
+        "accuracy":
+        0,
+        "description":
+        "Those who master the element of fire are known for their fierce determination and their ability to unleash devastating attacks upon their enemies. Their raw power allows them to deal massive amounts of damage, but they lack the defensive capabilities of other adventurers. At critical situations increase their damage output."
     }, {
-        "id": 2,
-        "name": "Ice",
-        "hp": 120,
-        "atk": 60,
-        "defense": 70,
-        "speed": 50,
-        "evasion": 40,
-        "accuracy": 80
+        "id":
+        2,
+        "name":
+        "Ice",
+        "hp":
+        120,
+        "atk":
+        80,
+        "defense":
+        110,
+        "speed":
+        100,
+        "evasion":
+        0,
+        "accuracy":
+        0,
+        "description":
+        "known for their durability and their ability to withstand even the most punishing attacks. They have a high base health pool and a slight boost to their defense, allowing them to shrug off damage while they close in on their enemies. However, their offensive capabilities are slightly weaker. At critical situations, they create an ice armor to protect themselves  and take less damage from attacks."
     }, {
-        "id": 3,
-        "name": "Thunder",
-        "hp": 90,
-        "atk": 90,
-        "defense": 40,
-        "speed": 80,
-        "evasion": 20,
-        "accuracy": 90
+        "id":
+        3,
+        "name":
+        "Thunder",
+        "hp":
+        85,
+        "atk":
+        110,
+        "defense":
+        100,
+        "speed":
+        120,
+        "evasion":
+        0,
+        "accuracy":
+        0,
+        "description":
+        "are lightning-fast and quick-witted, using their speed and agility to outmaneuver their foes. They are versatile fighters, capable of dealing moderate damage while still maintaining their mobility. However, they have slightly less health than other adventurers, making them vulnerable to sustained attacks. At critical health, they have a chance to attack twice."
     }, {
-        "id": 4,
-        "name": "Wind",
-        "hp": 80,
-        "atk": 70,
-        "defense": 60,
-        "speed": 100,
-        "evasion": 50,
-        "accuracy": 80
+        "id":
+        4,
+        "name":
+        "Wind",
+        "hp":
+        80,
+        "atk":
+        100,
+        "defense":
+        100,
+        "speed":
+        110,
+        "evasion":
+        30,
+        "accuracy":
+        0,
+        "description":
+        "are the masters of evasion, using their speed and agility to dodge attacks and strike from unexpected angles. They have a high base evasion stat and a slight boost to their speed, making them difficult to hit in combat. However, they have slightly less health than other adventurers, making them vulnerable to sustained attacks. In critical situations, they will use their mastery of the wind to evade incoming attacks."
     }, {
-        "id": 5,
-        "name": "Dark",
-        "hp": 110,
-        "atk": 60,
-        "defense": 80,
-        "speed": 40,
-        "evasion": 30,
-        "accuracy": 60
+        "id":
+        5,
+        "name":
+        "Dark",
+        "hp":
+        100,
+        "atk":
+        100,
+        "defense":
+        100,
+        "speed":
+        100,
+        "evasion":
+        10,
+        "accuracy":
+        30,
+        "description":
+        "Those who master the element of darkness are shrouded in mystery, able to hide in the shadows and strike with deadly accuracy. They have base stats across the board, but their attacks have a higher chance to hit their target. They are versatile fighters, capable of adapting to any situation and outmaneuvering their foes. In critical situations they can instill fear in their enemies, causing them to hesitate in combat."
     }]
 }
