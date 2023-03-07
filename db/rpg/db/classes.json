@@ -16,6 +16,8 @@
         0,
         "accuracy":
         0,
+        "strong": "Ice",
+        "weak": "Wind",
         "description":
         "Those who master the element of fire are known for their fierce determination and their ability to unleash devastating attacks upon their enemies. Their raw power allows them to deal massive amounts of damage, but they lack the defensive capabilities of other adventurers. At critical situations increase their damage output."
     }, {
@@ -35,6 +37,8 @@
         0,
         "accuracy":
         0,
+        "strong": "Thunder",
+        "weak": "Fire",
         "description":
         "known for their durability and their ability to withstand even the most punishing attacks. They have a high base health pool and a slight boost to their defense, allowing them to shrug off damage while they close in on their enemies. However, their offensive capabilities are slightly weaker. At critical situations, they create an ice armor to protect themselves  and take less damage from attacks."
     }, {
@@ -54,6 +58,8 @@
         0,
         "accuracy":
         0,
+        "strong": "Wind",
+        "weak": "Ice",
         "description":
         "are lightning-fast and quick-witted, using their speed and agility to outmaneuver their foes. They are versatile fighters, capable of dealing moderate damage while still maintaining their mobility. However, they have slightly less health than other adventurers, making them vulnerable to sustained attacks. At critical health, they have a chance to attack twice."
     }, {
@@ -73,6 +79,8 @@
         30,
         "accuracy":
         0,
+        "strong": "Fire",
+        "weak": "Thunder",
         "description":
         "are the masters of evasion, using their speed and agility to dodge attacks and strike from unexpected angles. They have a high base evasion stat and a slight boost to their speed, making them difficult to hit in combat. However, they have slightly less health than other adventurers, making them vulnerable to sustained attacks. In critical situations, they will use their mastery of the wind to evade incoming attacks."
     }, {
@@ -92,6 +100,8 @@
         10,
         "accuracy":
         30,
+        "strong": "Dark",
+        "weak": "Dark",
         "description":
         "Those who master the element of darkness are shrouded in mystery, able to hide in the shadows and strike with deadly accuracy. They have base stats across the board, but their attacks have a higher chance to hit their target. They are versatile fighters, capable of adapting to any situation and outmaneuvering their foes. In critical situations they can instill fear in their enemies, causing them to hesitate in combat."
     }]

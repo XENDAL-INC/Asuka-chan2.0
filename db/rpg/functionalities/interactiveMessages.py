@@ -48,3 +48,13 @@ def showRPGEncounter(user, player, monster, avatar, playerHpBar, monsterHpBar,
         for attack in player["attacks"]
     ]
     return embed, buttons
+
+def encounterOutcome(playerName, playerAtk, playerDmg, monsterName, monsterAtk, monsterDmg, gameOver, loser, winner):
+  if not gameOver:
+    msg = f"{playerName} used {playerAtk} and dealt {playerDmg}!"
+    msg += f"\n{monsterName} used {monsterAtk} and dealt {monsterDmg}!"
+
+  else:
+    msg = f"{winner} has defeated {loser}!"
+
+  return msg

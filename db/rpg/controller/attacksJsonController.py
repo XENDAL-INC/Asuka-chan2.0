@@ -2,36 +2,51 @@ import json
 
 
 def loadAttacksJSON():
-    with open('db/rpg/db/attacks.json', 'r') as f:
-        data = json.load(f)
-    return data["types"]
+  with open('db/rpg/db/attacks.json', 'r') as f:
+    data = json.load(f)
+  return data["attacks"]
 
 
-def getAllAttackTypes(type):
-
-    attacks = loadAttacksJSON()
-    for atk_type in attacks:
-        if atk_type["name"] == type:
-            return atk_type["attacks"]
-    return None
+def getAllAttacks():
+  attacks = loadAttacksJSON()
+  return attacks
 
 
-def getAttacksByName(type, name):
-    attacks = getAllAttackTypes(type)
-    for attack in attacks:
-        if attack["name"] == name:
-            return attack
-    return None
+def getAllAttacksByType(type):
+  allAttacks = getAllAttacks()
+  typeAttacks = {}
+  for attack in allAttacks:
+    if attack['type'].lower() == type.lower():
+      typeAttacks[str(attack['id'])] = attack
+  return typeAttacks
 
 
-def getAttacksById(type, id):
-    attacks = getAllAttackTypes(type)
-    for attack in attacks:
-        if attack["id"] == id:
-            return attack
-    return None
+def getAllAttacksByTypeAndLevel(type, lvl):
+  allAttacks = getAllAttacks()
+  targetAttacks = {}
+  for attack in allAttacks:
+    if attack['type'].lower() == type.lower() and attack['lvl'] == lvl:
+      targetAttacks[str(attack['id'])] = attack
+  #print(targetAttacks[str(0)]['description'])
+  return targetAttacks
+
+
+def getAttacksByName(name):
+  attacks = getAllAttacks()
+  for attack in attacks:
+    if attack["name"] == name:
+      return attack
+  return None
+
+
+def getAttacksById(id):
+  attacks = getAllAttacks()
+  for attack in attacks:
+    if attack["id"] == id:
+      return attack
+  return None
 
 
 def getAttributeFromAttack(name, attribute):
-    attack = getAttacksByName(type, name)
-    return attack[attribute]
+  attack = getAttacksByName(name)
+  return attack[attribute]

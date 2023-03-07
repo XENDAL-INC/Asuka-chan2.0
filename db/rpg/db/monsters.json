@@ -2,7 +2,7 @@
     "0": {
         "name": "Flame-Goblin",
         "class": "Fire",
-        "exp": 50,
+        "exp": 100,
         "MaxHp": 60,
         "CurrentHp": 60,
         "atk": 72,
@@ -16,7 +16,7 @@
     "1": {
         "name": "Kobold",
         "class": "Ice",
-        "exp": 25,
+        "exp": 50,
         "MaxHp": 60,
         "CurrentHp": 60,
         "atk": 40,
@@ -30,7 +30,7 @@
     "2": {
         "name": "Skeleton",
         "class": "Dark",
-        "exp": 50,
+        "exp": 100,
         "MaxHp": 60,
         "CurrentHp": 60,
         "atk": 60,

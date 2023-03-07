@@ -1,0 +1,152 @@
+{
+    "types": [{
+        "id":
+        0,
+        "name":
+        "Fire",
+        "attacks": [{
+            "id": 0,
+            "name": "Ignite",
+            "lvl": 0,
+            "description":
+            "Sets the target on fire, dealing mild fire damage.",
+            "accuracy": 100,
+            "power": 30,
+            "status": {
+                "name": null,
+                "chance": null
+            }
+        }, {
+            "id": 1,
+            "name": "Ember Burst",
+            "lvl": 1,
+            "description":
+            "Releases a burst of embers that deals mild fire damage.",
+            "accuracy": 100,
+            "power": 40,
+            "status": {
+                "name": "Burn",
+                "chance": 10
+            }
+        }]
+    }, {
+        "id":
+        1,
+        "name":
+        "Ice",
+        "attacks": [{
+            "id": 0,
+            "name": "Frostbite",
+            "lvl": 0,
+            "description": "Freezes the target, dealing mild ice damage.",
+            "accuracy": 100,
+            "power": 30,
+            "status": {
+                "name": null,
+                "chance": null
+            }
+        }, {
+            "id": 1,
+            "name": "Ice Shard",
+            "lvl": 1,
+            "description":
+            "Fires a small shard of ice, dealing mild ice damage to the target.",
+            "accuracy": 100,
+            "power": 40,
+            "status": {
+                "name": "Freeze",
+                "chance": 10
+            }
+        }]
+    }, {
+        "id":
+        2,
+        "name":
+        "Thunder",
+        "attacks": [{
+            "id": 0,
+            "name": "Spark",
+            "lvl": 0,
+            "description":
+            "Releases a small spark of lightning, dealing mild thunder damage.",
+            "accuracy": 100,
+            "power": 30,
+            "status": {
+                "name": null,
+                "chance": null
+            }
+        }, {
+            "id": 1,
+            "name": "Shocking Grasp",
+            "lvl": 1,
+            "description":
+            "Delivers a shock to the target, dealing mild thunder damage and might paralyze them temporarily.",
+            "accuracy": 100,
+            "power": 40,
+            "status": {
+                "name": "Stun",
+                "chance": 10
+            }
+        }]
+    }, {
+        "id":
+        3,
+        "name":
+        "Wind",
+        "attacks": [{
+            "id": 0,
+            "name": "Gust",
+            "lvl": 0,
+            "description":
+            "A simple blast of wind that deals mild damage to a single target.",
+            "accuracy": 100,
+            "power": 30,
+            "status": {
+                "name": null,
+                "chance": null
+            }
+        }, {
+            "id": 1,
+            "name": "Cyclone Slash",
+            "lvl": 1,
+            "description":
+            "Charges the user's hand with wind, launching enemies into the air on hit dealing mild wind damage that might cause bleeding",
+            "accuracy": 100,
+            "power": 40,
+            "status": {
+                "name": "Bleed",
+                "chance": 10
+            }
+        }]
+    }, {
+        "id":
+        4,
+        "name":
+        "Dark",
+        "attacks": [{
+            "id": 0,
+            "name": "Shadow Bolt",
+            "lvl": 0,
+            "description":
+            "A bolt of dark energy that deals low dark damage to a single target.",
+            "accuracy": 100,
+            "power": 30,
+            "status": {
+                "name": null,
+                "chance": null
+            }
+        }, {
+            "id": 1,
+            "name": "Dark Strike",
+            "lvl": 1,
+            "description":
+            "Cloaks the user into a veil of darkness to launch a surprise attack dealing mild dark damage that might cause fear",
+            "accuracy": 100,
+            "power": 40,
+            "status": {
+                "name": "Fear",
+                "chance": 10
+            }
+        }]
+    }]
+}
