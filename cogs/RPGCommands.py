@@ -25,13 +25,14 @@ class RPGCommands(commands.Cog):
 
   def __init__(self, client):
     self.client = client
-    self.player = None
-    self.newMonster = None
-    self.playerHpBar = None
-    self.monsterHpBar = None
-    self.playerDmg = None
-    self.monsterDmg = None
-    self.monsterLvl = None
+    #self.player = None
+    #self.newMonster = None
+    #self.playerHpBar = None
+    #self.monsterHpBar = None
+    #self.playerDmg = None
+    #self.monsterDmg = None
+    #self.monsterLvl = None
+    self.encounters = {}
 
   @commands.command()
   async def createChar(self, ctx):
@@ -102,84 +103,117 @@ class RPGCommands(commands.Cog):
   async def encounter(self, ctx):
     user = ctx.author.name
     id = ctx.author.id
+    if str(id) not in self.encounters:
+      self.encounters[str(id)] = {
+        'player': None,
+        'newMonster': None,
+        'playerHpBar': None,
+        'monsterHpBar': None,
+        'playerDmg': None,
+        'monsterDmg': None,
+        'monsterLvl': None,
+      }
+      #print(self.encounters)
+    else:
+      await ctx.send("u are already in an encounter")
+      return
     avatar = ctx.author.display_avatar
-    self.player = playerCont.getPlayersById(id)
+    player = playerCont.getPlayersById(id)
 
     randomLvlRange = random.randint(-2, 1)
-    self.monsterLvl = self.player['lvl'] + randomLvlRange
-    if self.monsterLvl <= 0:
-      self.monsterLvl = self.player['lvl']
+    monsterLvl = player['lvl'] + randomLvlRange
+    if monsterLvl <= 0:
+      monsterLvl = player['lvl']
 
     randomMonsterId = random.randint(0, len(monsterCont.getAllMonsters()) - 1)
 
-    self.newMonster = monsterCont.getMonsterById(str(randomMonsterId))
-    self.newMonster['MaxHp'] = calc.calc_hp(self.newMonster['MaxHp'],
-                                            self.monsterLvl)
-    self.newMonster['CurrentHp'] = self.newMonster['MaxHp']
-    self.newMonster['atk'] = calc.calc_stat(self.newMonster['atk'],
-                                            self.monsterLvl)
-    self.newMonster['defense'] = calc.calc_stat(self.newMonster['defense'],
-                                                self.monsterLvl)
-    self.newMonster['speed'] = calc.calc_stat(self.newMonster['speed'],
-                                              self.monsterLvl)
+    newMonster = monsterCont.getMonsterById(str(randomMonsterId))
+    newMonster['MaxHp'] = calc.calc_hp(newMonster['MaxHp'], monsterLvl)
+    newMonster['CurrentHp'] = newMonster['MaxHp']
+    newMonster['atk'] = calc.calc_stat(newMonster['atk'], monsterLvl)
+    newMonster['defense'] = calc.calc_stat(newMonster['defense'], monsterLvl)
+    newMonster['speed'] = calc.calc_stat(newMonster['speed'], monsterLvl)
 
-    self.playerHpBar = combat.health_bar(self.player["CurrentHp"],
-                                         self.player["MaxHp"])
-    self.monsterHpBar = combat.health_bar(self.newMonster["CurrentHp"],
-                                          self.newMonster["MaxHp"])
-    embed, buttons = intMsg.showRPGEncounter(user, self.player,
-                                             self.newMonster, avatar,
-                                             self.playerHpBar,
-                                             self.monsterHpBar,
-                                             self.monsterLvl)
+    playerHpBar = combat.health_bar(player["CurrentHp"], player["MaxHp"])
+    monsterHpBar = combat.health_bar(newMonster["CurrentHp"],
+                                     newMonster["MaxHp"])
+    embed, buttons = intMsg.showRPGEncounter(user, player, newMonster, avatar,
+                                             playerHpBar, monsterHpBar,
+                                             monsterLvl)
+
+    self.encounters[str(id)]['player'] = player
+    self.encounters[str(id)]['newMonster'] = newMonster
+    self.encounters[str(id)]['playerHpBar'] = playerHpBar
+    self.encounters[str(id)]['monsterHpBar'] = monsterHpBar
+    self.encounters[str(id)]['monsterLvl'] = monsterLvl
 
     async def callback(interaction: nextcord.Interaction):
+      if id != interaction.user.id:
+        await interaction.response.send_message(
+          f"{interaction.user.mention} you can't interact with somebody else's encounter b-baka!"
+        )
+        return
       custom_id = interaction.data['custom_id']
       for button_item in buttons:
         if button_item.custom_id == custom_id:
+          player = self.encounters[str(interaction.user.id)]['player']
+          newMonster = self.encounters[str(interaction.user.id)]['newMonster']
+          playerHpBar = self.encounters[str(
+            interaction.user.id)]['playerHpBar']
+          monsterHpBar = self.encounters[str(
+            interaction.user.id)]['monsterHpBar']
+          playerDmg = self.encounters[str(interaction.user.id)]['playerDmg']
+          monsterDmg = self.encounters[str(interaction.user.id)]['monsterDmg']
+          monsterLvl = self.encounters[str(interaction.user.id)]['monsterLvl']
 
-          self.player, self.newMonster, self.playerHpBar, self.monsterHpBar, self.playerDmg, self.monsterDmg, monsterAtkName, gameOver, loser, winner = combat.simpleEncounter(
-            self.player, self.newMonster, button_item.label, self.monsterLvl)
+          player, newMonster, playerHpBar, monsterHpBar, playerDmg, monsterDmg, monsterAtkName, gameOver, loser, winner = combat.simpleEncounter(
+            player, newMonster, button_item.label, monsterLvl)
 
-          msgContent = intMsg.encounterOutcome(self.player['name'],
-                                               button_item.label,
-                                               self.playerDmg,
-                                               self.newMonster['name'],
-                                               monsterAtkName, self.monsterDmg,
+
+          msgContent = intMsg.encounterOutcome(player['name'],
+                                               button_item.label, playerDmg,
+                                               newMonster['name'],
+                                               monsterAtkName, monsterDmg,
                                                gameOver, loser, winner)
 
-          embed, new_buttons = intMsg.showRPGEncounter(user, self.player,
-                                                       self.newMonster, avatar,
-                                                       self.playerHpBar,
-                                                       self.monsterHpBar,
-                                                       self.monsterLvl)
+          embed, new_buttons = intMsg.showRPGEncounter(user, player,
+                                                       newMonster, avatar,
+                                                       playerHpBar,
+                                                       monsterHpBar,
+                                                       monsterLvl)
 
           if gameOver:
+            del self.encounters[str(id)]
             await interaction.response.edit_message(content=msgContent,
                                                     embed=embed,
                                                     view=None)
-            if self.player['CurrentHp'] <= 0:
-              self.player['CurrentHp'] = self.player['MaxHp']
+            if player['CurrentHp'] <= 0:
+              player['CurrentHp'] = player['MaxHp']
             else:
-              startLvl = self.player['lvl']
-              self.player['lvl'], self.player['exp'] = calc.levelUp(
-                self.player['lvl'], self.newMonster['exp'], self.player['exp'])
-              if startLvl < self.player['lvl']:
-                clss = classCont.getClassByName(self.player['class'])
-                self.player['MaxHp'] = calc.calc_hp(clss['hp'],
-                                                    self.player['lvl'])
-                self.player['CurrentHp'] = self.player['MaxHp']
-                self.player['atk'] = calc.calc_stat(clss['atk'],
-                                                    self.player['lvl'])
-                self.player['defense'] = calc.calc_stat(
-                  clss['defense'], self.player['lvl'])
-                self.player['speed'] = calc.calc_stat(clss['speed'],
-                                                      self.player['lvl'])
+              startLvl = player['lvl']
+              player['lvl'], player['exp'] = calc.levelUp(
+                player['lvl'], newMonster['exp'], player['exp'])
+              if startLvl < player['lvl']:
+                clss = classCont.getClassByName(player['class'])
+                player['MaxHp'] = calc.calc_hp(clss['hp'], player['lvl'])
+                player['CurrentHp'] = player['MaxHp']
+                player['atk'] = calc.calc_stat(clss['atk'], player['lvl'])
+                player['defense'] = calc.calc_stat(clss['defense'],
+                                                   player['lvl'])
+                player['speed'] = calc.calc_stat(clss['speed'], player['lvl'])
 
-            playerCont.updateSinglePlayerInfo(self.player, id)
+            playerCont.updateSinglePlayerInfo(player, id)
 
             return
-
+          self.encounters[str(interaction.user.id)]['player'] = player
+          self.encounters[str(interaction.user.id)]['newMonster'] = newMonster
+          self.encounters[str(
+            interaction.user.id)]['playerHpBar'] = playerHpBar
+          self.encounters[str(
+            interaction.user.id)]['monsterHpBar'] = monsterHpBar
+          self.encounters[str(interaction.user.id)]['playerDmg'] = playerDmg
+          self.encounters[str(interaction.user.id)]['monsterDmg'] = monsterDmg
+          self.encounters[str(interaction.user.id)]['monsterLvl'] = monsterLvl
           await interaction.response.edit_message(content=msgContent,
                                                   embed=embed)
           break

@@ -83,6 +83,21 @@ def checkPassive(currentHp, MaxHp, type):
     return None
 
 
+def checkIfStatus(status, chance):
+  if random.random() < (chance / 100):
+    return status
+  return None
+
+
+def checkStatus(status, maxHp, currentHp):
+  if status is not None:
+    if status in ["Burn", "Bleed"]:
+      currentHp -= (maxHp * 0.05)
+      return currentHp, (maxHp * 0.05), False
+    elif status in ["Stun", "Freeze", "Fear"]:
+      return currentHp, 0, True
+  return None
+
 
 def calc_accuracy(attack_acc, modifier):
   accuracy = (attack_acc / 100 * 3 / 4) * (1 + (modifier / 100))
