@@ -5,6 +5,29 @@ from nextcord.ui import Button
 from nextcord import Embed
 
 
+def createChar(user, avatar, wlcmMsg):
+  embed = Embed()
+  embed.set_thumbnail(url=avatar)
+  embed.color = 0x4887c6
+  embed.title = f"{user}'s Character Creation"
+  embed.description = wlcmMsg
+  return embed
+
+
+def classChoice(user, avatar, clssName, description):
+  embed = Embed()
+  embed.set_thumbnail(url=avatar)
+  embed.color = 0x4887c6
+  embed.title = "What Element do u want to master? u have to choose by reacting!"
+  embed.description = description
+  buttons = []
+  buttons.append(
+    nextcord.Button(style=nextcord.ButtonStyle.secondary, label='▶️'))
+  buttons.append(nextcord.Button(style=nextcord.ButtonStyle.success,
+                                 label='✅'))
+  return embed, buttons
+
+
 def showRPGChar(user, player, avatar):
   embed = Embed()
   embed.set_thumbnail(url=avatar)

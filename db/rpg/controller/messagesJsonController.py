@@ -5,27 +5,20 @@ def getAllMessages():
   # Load the JSON file
   with open('db/rpg/db/messages.json', 'r') as f:
     data = json.load(f)
-  return data
+  return data['messages']
 
 
-def getAllMessagesByType(type):
+def getMessageById(id):
   data = getAllMessages()
-  if str(type) in data and data[str(type)] is not None:
-    return data[str(type)]
-  return None
-
-
-def getMessageById(type, id):
-  data = getAllMessagesByType(type)
   for msg in data:
     if str(msg['id']) == str(id):
       return msg
   return None
 
 
-def getMessageByName(type, name):
-  data = getAllMessagesByType(type)
+def getMessageByName(name):
+  data = getAllMessages()
   for msg in data:
     if str(msg['name']) == str(name):
-      return msg
+      return msg['msg']
   return None

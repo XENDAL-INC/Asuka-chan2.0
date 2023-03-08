@@ -39,24 +39,80 @@ class RPGCommands(commands.Cog):
     def check(message):
       return message.author == ctx.author and message.channel == ctx.channel
 
+    embedCt = 0
+
     try:
       response = await self.client.wait_for('message', check=check, timeout=30)
-      await ctx.send(
-        '```Hi ' + str(response.content) +
-        '! Welcome to the world of Eryndor, a realm of magic and adventure where the five elements reign supreme. Whether you seek the power of fire, thunder, ice, wind, or dark, there is a path for you to follow and a destiny to fulfill.\n\nIn Eryndor, magic is everything. It flows through the land, the sea, and the very air we breathe. It is the key to power and the gateway to adventure. Those who master the five elements can shape the world to their will, becoming the greatest heroes or villains of their age.\n\nSo come, adventurer, and explore the wonders of Eryndor. Unleash the fury of the elements, brave perilous dungeons and treacherous terrain, and discover the secrets that lie hidden in the deepest, darkest corners of this enchanted land. The journey will be long and dangerous, but the rewards are beyond measure. Will you rise to the challenge and become a legend of Eryndor?```'
-      )
+      msg = msgCont.getMessageByName("welcome")
+      embed = intMsg.createChar(user, avatar,
+                                f'Hi {str(response.content)}! {msg}')
+      embedMessage = await ctx.send(embed=embed)
+      asuka = embedMessage.author
+      await embedMessage.add_reaction("▶️")
+
       name = str(response.content)
     except asyncio.TimeoutError:
       await ctx.send('You took too long to respond.')
       return
 
     class_name = "Fire"
-    await ctx.send(
-      'What Element do u want to master? u have to choose from one of the following:'
-    )
-    await ctx.send(
-      '```Fire: Those who master the element of fire are known for their fierce determination and their ability to unleash devastating attacks upon their enemies. Their raw power allows them to deal massive amounts of damage, but they lack the defensive capabilities of other adventurers. At critical situations increase their damage output.\n\nThunder: are lightning-fast and quick-witted, using their speed and agility to outmaneuver their foes. They are versatile fighters, capable of dealing moderate damage while still maintaining their mobility. However, they have slightly less health than other adventurers, making them vulnerable to sustained attacks. At critical health, they have a chance to attack twice\n\nIce: known for their durability and their ability to withstand even the most punishing attacks. They have a high base health pool and a slight boost to their defense, allowing them to shrug off damage while they close in on their enemies. However, their offensive capabilities are slightly weaker. At critical situations, they create an ice armor to protect themselves  and take less damage from attacks.\n\nWind:  are the masters of evasion, using their speed and agility to dodge attacks and strike from unexpected angles. They have a high base evasion stat and a slight boost to their speed, making them difficult to hit in combat. However, they have slightly less health than other adventurers, making them vulnerable to sustained attacks. In critical situations, they will use their mastery of the wind to evade incoming attacks.\n\nDark: Those who master the element of darkness are shrouded in mystery, able to hide in the shadows and strike with deadly accuracy. They have base stats across the board, but their attacks have a higher chance to hit their target. They are versatile fighters, capable of adapting to any situation and outmaneuvering their foes. In critical situations they can instill fear in their enemies, causing them to hesitate in combat.```'
-    )
+
+    def checkReaction(reaction, user):
+      global userReact
+      if reaction.message == embedMessage and user.id == id:
+        if user == asuka:
+          userReact = ctx.author
+        else:
+          userReact = user
+          return True
+
+    try:
+      #reaction.emoji == "▶️"
+      emoji = "▶️"
+      emojiConfirm = "✅"
+      while await self.client.wait_for('reaction_add',
+                                       check=checkReaction,
+                                       timeout=60):
+
+        embedCt += 1
+        await embedMessage.remove_reaction(emoji, userReact)
+        if embedCt == 1:
+          fireEmbed = intMsg.classChoice(
+            user, avatar, "Fire",
+            f'Fire: {classCont.getAttributeFromClass("Fire", "description")}')
+          await embedMessage.edit(embed=fireEmbed)
+          await embedMessage.add_reaction("✅")
+
+        elif embedCt == 2:
+          thunderEmbed = intMsg.classChoice(
+            user, avatar, "Thunder",
+            f'Thunder: {classCont.getAttributeFromClass("Thunder", "description")}'
+          )
+          await embedMessage.edit(embed=thunderEmbed)
+        elif embedCt == 3:
+          iceEmbed = intMsg.classChoice(
+            user, avatar, "Ice",
+            f'Ice: {classCont.getAttributeFromClass("Ice", "description")}')
+          await embedMessage.edit(embed=iceEmbed)
+        elif embedCt == 4:
+          windEmbed = intMsg.classChoice(
+            user, avatar, "Wind",
+            f'Thunder: {classCont.getAttributeFromClass("Wind", "description")}'
+          )
+          await embedMessage.edit(embed=windEmbed)
+        elif embedCt == 5:
+          darkEmbed = intMsg.classChoice(
+            user, avatar, "Dark",
+            f'Dark: {classCont.getAttributeFromClass("Dark", "description")}')
+          await embedMessage.edit(embed=darkEmbed)
+        else:
+          embedCt = 0
+          await embedMessage.edit(embed=embed)
+          await embedMessage.remove_reaction(emojiConfirm, asuka)
+
+    except asyncio.TimeoutError:
+      await embedMessage.remove_reaction(emoji, asuka)
+      return
 
     try:
       response = await self.client.wait_for('message', check=check, timeout=30)

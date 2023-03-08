@@ -1,5 +1,5 @@
 {
-  "create_character": [
+  "messages": [
     {
       "id": 0,
       "name": "welcome",
