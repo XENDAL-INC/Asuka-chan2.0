@@ -1,0 +1,9 @@
+{
+  "create_character": [
+    {
+      "id": 0,
+      "name": "welcome",
+      "msg" : "Welcome to the world of Eryndor, a realm of magic and adventure where the five elements reign supreme. Whether you seek the power of fire, thunder, ice, wind, or dark, there is a path for you to follow and a destiny to fulfill.\n\nIn Eryndor, magic is everything. It flows through the land, the sea, and the very air we breathe. It is the key to power and the gateway to adventure. Those who master the five elements can shape the world to their will, becoming the greatest heroes or villains of their age.\n\nSo come, adventurer, and explore the wonders of Eryndor. Unleash the fury of the elements, brave perilous dungeons and treacherous terrain, and discover the secrets that lie hidden in the deepest, darkest corners of this enchanted land. The journey will be long and dangerous, but the rewards are beyond measure. Will you rise to the challenge and become a legend of Eryndor?"
+    }
+  ]
+}

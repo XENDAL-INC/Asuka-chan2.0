@@ -21,7 +21,7 @@
         "power": 40,
         "status": {
             "name": "Burn",
-            "chance": 10
+            "chance": 20
         }
     }, {
         "id": 2,
@@ -45,7 +45,7 @@
         "power": 40,
         "status": {
             "name": "Freeze",
-            "chance": 10
+            "chance": 20
         }
     }, {
         "id": 4,
@@ -69,7 +69,7 @@
         "power": 40,
         "status": {
             "name": "Stun",
-            "chance": 10
+            "chance": 20
         }
     }, {
         "id": 6,
@@ -83,6 +83,18 @@
             "name": null,
             "chance": null
         }
+    },{
+            "id": 7,
+            "name": "Cyclone Slash",
+            "lvl": 1,
+            "description":
+            "Charges the user's hand with wind, launching enemies into the air on hit dealing mild wind damage that might cause bleeding",
+            "accuracy": 100,
+            "power": 40,
+            "status": {
+                "name": "Bleed",
+                "chance": 20
+            }
     },{
   "id": 8,
   "name": "Shadow Bolt",

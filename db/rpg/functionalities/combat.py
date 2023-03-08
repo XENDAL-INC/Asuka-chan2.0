@@ -31,7 +31,8 @@ def health_bar(health, max_health):
 
 
 def simpleEncounter(player, newMonster, attack_used, monsterLvl):
-
+  monsterDmg = ""
+  monsterAtkName = ""
   #userAttack
   atkClass = classCont.getClassByName(player['class'])
   dmgModifier = calc.checkAdvantage(atkClass, newMonster['class'])
@@ -56,35 +57,46 @@ def simpleEncounter(player, newMonster, attack_used, monsterLvl):
   attack_power = attack_used['power']
   playerDmg = calc.calculate_damage(player['lvl'], attack_power, player['atk'],
                                     newMonster['defense'], dmgModifier)
-  newMonster['CurrentHp'] -= playerDmg
+
+  statusInflict = calc.checkIfStatus(attack_used, statusInflict)
+  statusDmg = 0
+  statusInhibit = False
+  """statusDmg, statusInhibit = calc.checkStatus(statusInflict,
+                                              newMonster['MaxHp'])"""
+
+  statusInfo = calc.checkStatus(statusInflict, newMonster['MaxHp'])
+  if statusInfo is not None:
+    statusDmg, statusInhibit = statusInfo
+
+  newMonster['CurrentHp'] -= playerDmg + statusDmg
   monsterHpBar = health_bar(newMonster["CurrentHp"], newMonster["MaxHp"])
 
   if newMonster['CurrentHp'] <= 0:
     playerHpBar = health_bar(player["CurrentHp"], player["MaxHp"])
     return player, newMonster, playerHpBar, monsterHpBar, playerDmg, None, None, True, newMonster[
-      'name'], player['name']
+      'name'], player['name'], statusInflict, statusDmg
 
   #monsterAttack
+  if not statusInhibit:
+    monsterRandomAttack = random.choice(newMonster["attacks"])
+    monsterAtkUsed = attacksCont.getAttacksByName(monsterRandomAttack)
+    monsterAtkName = monsterAtkUsed['name']
+    attack_power = monsterAtkUsed['power']
 
-  monsterRandomAttack = random.choice(newMonster["attacks"])
-  monsterAtkUsed = attacksCont.getAttacksByName(monsterRandomAttack)
-  attack_power = monsterAtkUsed['power']
+    atkClass = classCont.getClassByName(newMonster['class'])
+    dmgModifier = calc.checkAdvantage(atkClass, player['class'])
+    dmgModifier *= defModifier
 
-  atkClass = classCont.getClassByName(newMonster['class'])
-  dmgModifier = calc.checkAdvantage(atkClass, player['class'])
-  dmgModifier *= defModifier
-
-  monsterDmg = calc.calculate_damage(monsterLvl, attack_power,
-                                     newMonster['atk'], player['defense'],
-                                     dmgModifier)
-  player['CurrentHp'] -= monsterDmg
+    monsterDmg = calc.calculate_damage(monsterLvl, attack_power,
+                                       newMonster['atk'], player['defense'],
+                                       dmgModifier)
+    player['CurrentHp'] -= monsterDmg
   playerHpBar = health_bar(player["CurrentHp"], player["MaxHp"])
   if player['CurrentHp'] <= 0:
-    return player, newMonster, playerHpBar, monsterHpBar, playerDmg, monsterDmg, monsterAtkUsed[
-      'name'], True, player['name'], newMonster['name']
+    return player, newMonster, playerHpBar, monsterHpBar, playerDmg, monsterDmg, monsterAtkName, True, player[
+      'name'], newMonster['name'], statusInflict, statusDmg
 
-  return player, newMonster, playerHpBar, monsterHpBar, playerDmg, monsterDmg, monsterAtkUsed[
-    'name'], False, None, None
+  return player, newMonster, playerHpBar, monsterHpBar, playerDmg, monsterDmg, monsterAtkName, False, None, None, statusInflict, statusDmg
 
 
 def combatVSPc(player_dmg,

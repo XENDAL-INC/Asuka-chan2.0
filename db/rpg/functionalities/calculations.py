@@ -83,19 +83,22 @@ def checkPassive(currentHp, MaxHp, type):
     return None
 
 
-def checkIfStatus(status, chance):
-  if random.random() < (chance / 100):
-    return status
+def checkIfStatus(attack, statusInflict):
+  if statusInflict is None:
+    status = attack['status']['name']
+    chance = attack['status']['chance']
+    if chance is not None and random.random() < (chance / 100):
+      return status
   return None
 
 
-def checkStatus(status, maxHp, currentHp):
+def checkStatus(status, maxHp):
   if status is not None:
     if status in ["Burn", "Bleed"]:
-      currentHp -= (maxHp * 0.05)
-      return currentHp, (maxHp * 0.05), False
+      statusDmg = (maxHp * 0.05)
+      return int(statusDmg), False
     elif status in ["Stun", "Freeze", "Fear"]:
-      return currentHp, 0, True
+      return 0, True
   return None
 
 

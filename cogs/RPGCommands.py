@@ -19,19 +19,13 @@ import playerJsonController as playerCont
 import monsterJsonController as monsterCont
 import classesJsonController as classCont
 import attacksJsonController as attacksCont
+import messagesJsonController as msgCont
 
 
 class RPGCommands(commands.Cog):
 
   def __init__(self, client):
     self.client = client
-    #self.player = None
-    #self.newMonster = None
-    #self.playerHpBar = None
-    #self.monsterHpBar = None
-    #self.playerDmg = None
-    #self.monsterDmg = None
-    #self.monsterLvl = None
     self.encounters = {}
 
   @commands.command()
@@ -67,7 +61,13 @@ class RPGCommands(commands.Cog):
     try:
       response = await self.client.wait_for('message', check=check, timeout=30)
       #await ctx.send('hi')
-      class_name = str(response.content)
+      if str(response.content) in ["Fire", "Ice", "Thunder", "Wind", "Dark"]:
+        class_name = str(response.content)
+      else:
+        await ctx.send(
+          'You gave an invalid response, pls try (Fire, Ice, Thunder, Wind or Dark)'
+        )
+        return
     except asyncio.TimeoutError:
       await ctx.send('You took too long to respond.')
       return
@@ -166,15 +166,15 @@ class RPGCommands(commands.Cog):
           monsterDmg = self.encounters[str(interaction.user.id)]['monsterDmg']
           monsterLvl = self.encounters[str(interaction.user.id)]['monsterLvl']
 
-          player, newMonster, playerHpBar, monsterHpBar, playerDmg, monsterDmg, monsterAtkName, gameOver, loser, winner = combat.simpleEncounter(
+          player, newMonster, playerHpBar, monsterHpBar, playerDmg, monsterDmg, monsterAtkName, gameOver, loser, winner, statusInflict, statusDmg = combat.simpleEncounter(
             player, newMonster, button_item.label, monsterLvl)
-
 
           msgContent = intMsg.encounterOutcome(player['name'],
                                                button_item.label, playerDmg,
                                                newMonster['name'],
                                                monsterAtkName, monsterDmg,
-                                               gameOver, loser, winner)
+                                               gameOver, loser, winner,
+                                               statusInflict, statusDmg)
 
           embed, new_buttons = intMsg.showRPGEncounter(user, player,
                                                        newMonster, avatar,
