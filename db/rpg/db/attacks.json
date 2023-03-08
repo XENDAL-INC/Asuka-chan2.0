@@ -86,6 +86,7 @@
     },{
             "id": 7,
             "name": "Cyclone Slash",
+            "type": "wind",
             "lvl": 1,
             "description":
             "Charges the user's hand with wind, launching enemies into the air on hit dealing mild wind damage that might cause bleeding",

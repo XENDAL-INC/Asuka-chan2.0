@@ -33,22 +33,128 @@ class RPGCommands(commands.Cog):
     user = ctx.author.name
     id = ctx.author.id
     avatar = ctx.author.display_avatar
+    embedCt = 0
     await ctx.send('What is your Name?')
     name = "John Doe"
+    buttons = []
+
+    async def createCharacter(id, user, name, class_name):
+      clss = classCont.getClassByName(class_name)
+      hp = calc.calc_hp(clss['hp'], 1)
+      atk = calc.calc_stat(clss['atk'], 1)
+      defense = calc.calc_stat(clss['defense'], 1)
+      speed = calc.calc_stat(clss['speed'], 1)
+      evasion = calc.calc_stat(clss['evasion'], 1)
+      accuracy = calc.calc_stat(clss['accuracy'], 1)
+      attacks = []
+      targetAttacks = attacksCont.getAllAttacksByTypeAndLevel(clss['name'], 0)
+      for attack in targetAttacks.values():
+        attacks.append(attack['name'])
+      playerCont.createNewPlayerDB(id, user, class_name, name, hp, atk,
+                                   defense, speed, evasion, accuracy, attacks)
+      player = playerCont.getPlayersById(id)
+      embed = intMsg.showRPGChar(user, player, avatar)
+      await ctx.send(embed=embed)
+
+    async def callback(interaction: nextcord.Interaction):
+      nonlocal embedCt
+      nonlocal id
+      nonlocal buttons
+      if id != interaction.user.id:
+        await interaction.response.send_message(
+          f"{interaction.user.mention} you can't interact with somebody else's character creation b-baka!"
+        )
+        return
+      custom_id = interaction.data['custom_id']
+
+      for button_item in buttons:
+        if button_item.custom_id == custom_id:
+          if button_item.label == "▶️":
+            embedCt += 1
+            if embedCt == 1:
+              user = interaction.user.name
+              fireEmbed = intMsg.classChoice(
+                user, avatar, "Fire",
+                f'Fire: {classCont.getAttributeFromClass("Fire", "description")}'
+              )
+              await interaction.response.edit_message(embed=fireEmbed)
+
+            elif embedCt == 2:
+              user = interaction.user.name
+              thunderEmbed = intMsg.classChoice(
+                user, avatar, "Thunder",
+                f'Thunder: {classCont.getAttributeFromClass("Thunder", "description")}'
+              )
+              await interaction.response.edit_message(embed=thunderEmbed)
+            elif embedCt == 3:
+              user = interaction.user.name
+              iceEmbed = intMsg.classChoice(
+                user, avatar, "Ice",
+                f'Ice: {classCont.getAttributeFromClass("Ice", "description")}'
+              )
+              await interaction.response.edit_message(embed=iceEmbed)
+            elif embedCt == 4:
+              user = interaction.user.name
+              windEmbed = intMsg.classChoice(
+                user, avatar, "Wind",
+                f'Wind: {classCont.getAttributeFromClass("Wind", "description")}'
+              )
+              await interaction.response.edit_message(embed=windEmbed)
+            elif embedCt == 5:
+              user = interaction.user.name
+              darkEmbed = intMsg.classChoice(
+                user, avatar, "Dark",
+                f'Dark: {classCont.getAttributeFromClass("Dark", "description")}'
+              )
+              await interaction.response.edit_message(embed=darkEmbed)
+            else:
+              embedCt = 0
+              await interaction.response.edit_message(embed=embed)
+          elif button_item.label == "✅":
+            if embedCt == 1:
+              class_name = "Fire"
+              id = interaction.user.id
+              user = interaction.user.name
+              await createCharacter(id, user, name, class_name)
+              await interaction.response.edit_message(view=None)
+              return
+            elif embedCt == 2:
+              class_name = "Thunder"
+              id = interaction.user.id
+              user = interaction.user.name
+              await createCharacter(id, user, name, class_name)
+              await interaction.response.edit_message(view=None)
+              return
+            elif embedCt == 3:
+              class_name = "Ice"
+              id = interaction.user.id
+              user = interaction.user.name
+              await createCharacter(id, user, name, class_name)
+              await interaction.response.edit_message(view=None)
+              return
+            elif embedCt == 4:
+              class_name = "Wind"
+              id = interaction.user.id
+              user = interaction.user.name
+              await createCharacter(id, user, name, class_name)
+              await interaction.response.edit_message(view=None)
+              return
+            elif embedCt == 5:
+              class_name = "Dark"
+              id = interaction.user.id
+              user = interaction.user.name
+              await createCharacter(id, user, name, class_name)
+              await interaction.response.edit_message(view=None)
+              return
 
     def check(message):
       return message.author == ctx.author and message.channel == ctx.channel
 
-    embedCt = 0
-
     try:
       response = await self.client.wait_for('message', check=check, timeout=30)
       msg = msgCont.getMessageByName("welcome")
-      embed = intMsg.createChar(user, avatar,
-                                f'Hi {str(response.content)}! {msg}')
-      embedMessage = await ctx.send(embed=embed)
-      asuka = embedMessage.author
-      await embedMessage.add_reaction("▶️")
+      embed, buttons = intMsg.createChar(user, avatar,
+                                         f'Hi {str(response.content)}! {msg}')
 
       name = str(response.content)
     except asyncio.TimeoutError:
@@ -57,93 +163,13 @@ class RPGCommands(commands.Cog):
 
     class_name = "Fire"
 
-    def checkReaction(reaction, user):
-      global userReact
-      if reaction.message == embedMessage and user.id == id:
-        if user == asuka:
-          userReact = ctx.author
-        else:
-          userReact = user
-          return True
+    view = View()
+    embedCt = 0
+    for button_item in buttons:
+      view.add_item(button_item)
+      button_item.callback = callback
 
-    try:
-      #reaction.emoji == "▶️"
-      emoji = "▶️"
-      emojiConfirm = "✅"
-      while await self.client.wait_for('reaction_add',
-                                       check=checkReaction,
-                                       timeout=60):
-
-        embedCt += 1
-        await embedMessage.remove_reaction(emoji, userReact)
-        if embedCt == 1:
-          fireEmbed = intMsg.classChoice(
-            user, avatar, "Fire",
-            f'Fire: {classCont.getAttributeFromClass("Fire", "description")}')
-          await embedMessage.edit(embed=fireEmbed)
-          await embedMessage.add_reaction("✅")
-
-        elif embedCt == 2:
-          thunderEmbed = intMsg.classChoice(
-            user, avatar, "Thunder",
-            f'Thunder: {classCont.getAttributeFromClass("Thunder", "description")}'
-          )
-          await embedMessage.edit(embed=thunderEmbed)
-        elif embedCt == 3:
-          iceEmbed = intMsg.classChoice(
-            user, avatar, "Ice",
-            f'Ice: {classCont.getAttributeFromClass("Ice", "description")}')
-          await embedMessage.edit(embed=iceEmbed)
-        elif embedCt == 4:
-          windEmbed = intMsg.classChoice(
-            user, avatar, "Wind",
-            f'Thunder: {classCont.getAttributeFromClass("Wind", "description")}'
-          )
-          await embedMessage.edit(embed=windEmbed)
-        elif embedCt == 5:
-          darkEmbed = intMsg.classChoice(
-            user, avatar, "Dark",
-            f'Dark: {classCont.getAttributeFromClass("Dark", "description")}')
-          await embedMessage.edit(embed=darkEmbed)
-        else:
-          embedCt = 0
-          await embedMessage.edit(embed=embed)
-          await embedMessage.remove_reaction(emojiConfirm, asuka)
-
-    except asyncio.TimeoutError:
-      await embedMessage.remove_reaction(emoji, asuka)
-      return
-
-    try:
-      response = await self.client.wait_for('message', check=check, timeout=30)
-      #await ctx.send('hi')
-      if str(response.content) in ["Fire", "Ice", "Thunder", "Wind", "Dark"]:
-        class_name = str(response.content)
-      else:
-        await ctx.send(
-          'You gave an invalid response, pls try (Fire, Ice, Thunder, Wind or Dark)'
-        )
-        return
-    except asyncio.TimeoutError:
-      await ctx.send('You took too long to respond.')
-      return
-
-    clss = classCont.getClassByName(class_name)
-    hp = calc.calc_hp(clss['hp'], 1)
-    atk = calc.calc_stat(clss['atk'], 1)
-    defense = calc.calc_stat(clss['defense'], 1)
-    speed = calc.calc_stat(clss['speed'], 1)
-    evasion = calc.calc_stat(clss['evasion'], 1)
-    accuracy = calc.calc_stat(clss['accuracy'], 1)
-    attacks = []
-    targetAttacks = attacksCont.getAllAttacksByTypeAndLevel(clss['name'], 0)
-    for attack in targetAttacks.values():
-      attacks.append(attack['name'])
-    playerCont.createNewPlayerDB(id, user, class_name, name, hp, atk, defense,
-                                 speed, evasion, accuracy, attacks)
-    player = playerCont.getPlayersById(id)
-    embed = intMsg.showRPGChar(user, player, avatar)
-    await ctx.send(embed=embed)
+    message = await ctx.send(embed=embed, view=view)
 
   @commands.command()
   async def showChar(self, ctx):

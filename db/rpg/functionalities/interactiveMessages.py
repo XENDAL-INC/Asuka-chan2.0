@@ -11,7 +11,12 @@ def createChar(user, avatar, wlcmMsg):
   embed.color = 0x4887c6
   embed.title = f"{user}'s Character Creation"
   embed.description = wlcmMsg
-  return embed
+  emojis = ["▶️", "✅"]
+  buttons = [
+    Button(style=nextcord.ButtonStyle.secondary, label=emoji)
+    for emoji in emojis
+  ]
+  return embed, buttons
 
 
 def classChoice(user, avatar, clssName, description):
@@ -20,12 +25,7 @@ def classChoice(user, avatar, clssName, description):
   embed.color = 0x4887c6
   embed.title = "What Element do u want to master? u have to choose by reacting!"
   embed.description = description
-  buttons = []
-  buttons.append(
-    nextcord.Button(style=nextcord.ButtonStyle.secondary, label='▶️'))
-  buttons.append(nextcord.Button(style=nextcord.ButtonStyle.success,
-                                 label='✅'))
-  return embed, buttons
+  return embed
 
 
 def showRPGChar(user, player, avatar):

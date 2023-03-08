@@ -25,6 +25,7 @@ def getAllAttacksByTypeAndLevel(type, lvl):
   allAttacks = getAllAttacks()
   targetAttacks = {}
   for attack in allAttacks:
+    #print(attack)
     if attack['type'].lower() == type.lower() and attack['lvl'] == lvl:
       targetAttacks[str(attack['id'])] = attack
   #print(targetAttacks[str(0)]['description'])
