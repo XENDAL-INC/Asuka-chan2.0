@@ -23,7 +23,7 @@ def classChoice(user, avatar, clssName, description):
   embed = Embed()
   embed.set_thumbnail(url=avatar)
   embed.color = 0x4887c6
-  embed.title = "What Element do u want to master? u have to choose by reacting!"
+  embed.title = "What Element do u want to master? u have to choose by clicking the buttons!"
   embed.description = description
   return embed
 

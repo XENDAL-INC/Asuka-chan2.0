@@ -30,11 +30,9 @@ def health_bar(health, max_health):
   return health_bar
 
 
-def simpleEncounter(player, newMonster, attack_used, monsterLvl):
-  monsterDmg = ""
-  monsterAtkName = ""
-  #userAttack
-  atkClass = classCont.getClassByName(player['class'])
+def playerEncounterCalc(player, newMonster, attack_used, monsterLvl):
+  attack_used = attacksCont.getAttacksByName(attack_used)
+  atkClass = classCont.getClassByName(attack_used['type'])
   dmgModifier = calc.checkAdvantage(atkClass, newMonster['class'])
   defModifier = 1
   evasionModifier = 0
@@ -53,7 +51,53 @@ def simpleEncounter(player, newMonster, attack_used, monsterLvl):
     elif passive == "status":
       statusInflict = passiveValue
 
+  attack_power = attack_used['power']
+  playerDmg = calc.calculate_damage(player['lvl'], attack_power, player['atk'],
+                                    newMonster['defense'], dmgModifier)
+
+  statusInflict = calc.checkIfStatus(attack_used, statusInflict)
+  statusDmg = 0
+  statusInhibit = False
+  """statusDmg, statusInhibit = calc.checkStatus(statusInflict,
+                                              newMonster['MaxHp'])"""
+
+  statusInfo = calc.checkStatus(statusInflict, newMonster['MaxHp'])
+  if statusInfo is not None:
+    statusDmg, statusInhibit = statusInfo
+
+  newMonster['CurrentHp'] -= playerDmg + statusDmg
+  monsterHpBar = health_bar(newMonster["CurrentHp"], newMonster["MaxHp"])
+
+  if newMonster['CurrentHp'] <= 0:
+    playerHpBar = health_bar(player["CurrentHp"], player["MaxHp"])
+    return player, newMonster, playerHpBar, monsterHpBar, playerDmg, None, None, True, newMonster[
+      'name'], player['name'], statusInflict, statusDmg
+
+
+def simpleEncounter(player, newMonster, attack_used, monsterLvl):
+  monsterDmg = ""
+  monsterAtkName = ""
+  #userAttack
   attack_used = attacksCont.getAttacksByName(attack_used)
+  atkClass = classCont.getClassByName(attack_used['type'])
+  dmgModifier = calc.checkAdvantage(atkClass, newMonster['class'])
+  defModifier = 1
+  evasionModifier = 0
+  statusInflict = None
+
+  passiveCheck = calc.checkPassive(player['CurrentHp'], player['MaxHp'],
+                                   player['class'])
+  if passiveCheck is not None:
+    passive, passiveValue = passiveCheck
+    if passive == "dmgModifier":
+      dmgModifier *= passiveValue
+    elif passive == "defModifier":
+      defModifier = passiveValue
+    elif passive == "evade":
+      evasionModifier += passiveValue
+    elif passive == "status":
+      statusInflict = passiveValue
+
   attack_power = attack_used['power']
   playerDmg = calc.calculate_damage(player['lvl'], attack_power, player['atk'],
                                     newMonster['defense'], dmgModifier)
@@ -83,7 +127,7 @@ def simpleEncounter(player, newMonster, attack_used, monsterLvl):
     monsterAtkName = monsterAtkUsed['name']
     attack_power = monsterAtkUsed['power']
 
-    atkClass = classCont.getClassByName(newMonster['class'])
+    atkClass = classCont.getClassByName(monsterAtkUsed['type'])
     dmgModifier = calc.checkAdvantage(atkClass, player['class'])
     dmgModifier *= defModifier
 

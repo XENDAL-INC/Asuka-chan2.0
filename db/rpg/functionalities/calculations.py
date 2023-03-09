@@ -43,6 +43,11 @@ def levelUp(lvlStart, exp, player_exp):
     return lvl, player_exp
 
 
+def calc_accuracy(attack_acc, modifier):
+  accuracy = (attack_acc / 100 * 3 / 4) * (1 + (modifier / 100))
+  return min(1.0, accuracy)
+
+
 def ifHit(attacker_acc, defender_eva):
   # Calculate the evasion fraction based on the defender's evasion stat.
   eva_fraction = defender_eva / 100 * 3 / 4
@@ -59,6 +64,8 @@ def checkAdvantage(atkClass, defType):
   if atkClass['strong'].lower() == defType.lower():
     return 1.50
   elif atkClass['weak'].lower() == defType.lower():
+    return 0.50
+  elif atkClass['name'].lower() == defType.lower():
     return 0.50
   else:
     return 1
@@ -100,11 +107,6 @@ def checkStatus(status, maxHp):
     elif status in ["Stun", "Freeze", "Fear"]:
       return 0, True
   return None
-
-
-def calc_accuracy(attack_acc, modifier):
-  accuracy = (attack_acc / 100 * 3 / 4) * (1 + (modifier / 100))
-  return min(1.0, accuracy)
 
 
 def calc_hp(base_hp, lvl):
