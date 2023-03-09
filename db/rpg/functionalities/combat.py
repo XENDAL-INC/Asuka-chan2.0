@@ -31,7 +31,8 @@ def health_bar(health, max_health):
   return health_bar
 
 
-def playerEncounterCalc(player, newMonster, attack_used, monsterLvl):
+def playerEncounterCalc(player, newMonster, attack_used, monsterLvl,
+                        monsterDmg, monsterAtkName):
   attack_used = attacksCont.getAttacksByName(attack_used)
   atkClass = classCont.getClassByName(attack_used['type'])
   dmgModifier = calc.checkAdvantage(atkClass, newMonster['class'])
@@ -70,14 +71,14 @@ def playerEncounterCalc(player, newMonster, attack_used, monsterLvl):
   #if Game Over
   if newMonster['CurrentHp'] <= 0:
     playerHpBar = health_bar(player["CurrentHp"], player["MaxHp"])
-    return player, newMonster, playerHpBar, monsterHpBar, playerDmg, None, None, True, newMonster[
+    return player, newMonster, playerHpBar, monsterHpBar, playerDmg, monsterDmg, monsterAtkName, True, newMonster[
       'name'], player[
         'name'], statusInflict, statusDmg, statusInhibit, defModifier
 
   #not Game Over
   newMonster['status'] = statusInflict
-  playerHpBar = None
-  return player, newMonster, playerHpBar, monsterHpBar, playerDmg, None, None, False, None, None, statusInflict, statusDmg, statusInhibit, defModifier
+  playerHpBar = health_bar(player["CurrentHp"], player["MaxHp"])
+  return player, newMonster, playerHpBar, monsterHpBar, playerDmg, monsterDmg, monsterAtkName, False, None, None, statusInflict, statusDmg, statusInhibit, defModifier
 
 
 def monsterEncounterCalc(player, newMonster, monsterLvl, monsterHpBar,
@@ -104,7 +105,9 @@ def monsterEncounterCalc(player, newMonster, monsterLvl, monsterHpBar,
                                        dmgModifier)
     player['CurrentHp'] -= monsterDmg
   playerHpBar = health_bar(player["CurrentHp"], player["MaxHp"])
-  if player['CurrentHp'] <= 0:
+  monsterHpBar = health_bar(newMonster["CurrentHp"], newMonster["MaxHp"])
+
+  if player['CurrentHp'] <= 0:  #if Game Over
     return player, newMonster, playerHpBar, monsterHpBar, monsterDmg, monsterAtkName, True, player[
       'name'], newMonster['name'], statusInhibit
 
@@ -117,42 +120,40 @@ def monsterEncounterCalc(player, newMonster, monsterLvl, monsterHpBar,
 def simpleEncounter(player, newMonster, attack_used, monsterLvl):
   monsterDmg = ""
   monsterAtkName = ""
-  #userAttack
-  player, newMonster, playerHpBar, monsterHpBar, playerDmg, monsterDmg, monsterAtkName, isGameOver, loser, winner, statusInflict, statusDmg, statusInhibit, defModifier = playerEncounterCalc(
-    player, newMonster, attack_used, monsterLvl)
+  playerDmg = 0
+  statusInflict = None
+  statusDmg = 0
 
-  if not isGameOver:
+  if player['speed'] >= newMonster['speed']:  #if Player faster
+    #userAttack
+    player, newMonster, playerHpBar, monsterHpBar, playerDmg, monsterDmg, monsterAtkName, isGameOver, loser, winner, statusInflict, statusDmg, statusInhibit, defModifier = playerEncounterCalc(
+      player, newMonster, attack_used, monsterLvl, monsterDmg, monsterAtkName)
+
+    if not isGameOver:
+      #monsterAttack
+      player, newMonster, playerHpBar, monsterHpBar, monsterDmg, monsterAtkName, isGameOver, loser, winner, statusInhibit = monsterEncounterCalc(
+        player, newMonster, monsterLvl, monsterHpBar, playerHpBar, defModifier)
+
+  else:  #ifPlayerSlower
+    #check Player evasion and resistance passives
+    defModifier = 1
+    evasionModifier = 0
+    passiveCheck = calc.checkPassive(player['CurrentHp'], player['MaxHp'],
+                                     player['class'])
+    if passiveCheck is not None:
+      passive, passiveValue = passiveCheck
+      if passive == "defModifier":
+        defModifier = passiveValue
+      elif passive == "evade":
+        evasionModifier += passiveValue
     #monsterAttack
     player, newMonster, playerHpBar, monsterHpBar, monsterDmg, monsterAtkName, isGameOver, loser, winner, statusInhibit = monsterEncounterCalc(
-      player, newMonster, monsterLvl, monsterHpBar, playerHpBar, defModifier)
+      player, newMonster, monsterLvl, None, None, defModifier)
+
+    if not isGameOver:
+      #playerAttack
+      player, newMonster, playerHpBar, monsterHpBar, playerDmg, monsterDmg, monsterAtkName, isGameOver, loser, winner, statusInflict, statusDmg, statusInhibit, defModifier = playerEncounterCalc(
+        player, newMonster, attack_used, monsterLvl, monsterDmg,
+        monsterAtkName)
 
   return player, newMonster, playerHpBar, monsterHpBar, playerDmg, monsterDmg, monsterAtkName, isGameOver, loser, winner, statusInflict, statusDmg
-
-
-def combatVSPc(player_dmg,
-               computer_dmg,
-               playerTurn,
-               player_health,
-               computer_health,
-               isWin=False,
-               isLoss=False):
-  if playerTurn:
-    print("Player's turn:")
-    #input("Press Enter to attack...")
-    print("You attacked the computer and dealt", player_dmg, "damage.")
-    computer_health -= player_dmg
-    print("Computer's health is now", computer_health)
-    if computer_health <= 0:
-      isWin = True
-      return playerTurn, player_health, computer_health, isWin, isLoss
-    playerTurn = False
-
-  if not playerTurn:
-    # Computer's turn
-    print("Computer's turn:")
-    print("The computer attacked you and dealt", computer_dmg, "damage.")
-    player_health -= computer_dmg
-    if player_health <= 0:
-      isLoss = True
-      return playerTurn, player_health, computer_health, isWin, isLoss
-    playerTurn = True
