@@ -7,6 +7,7 @@ sys.path.append('db/rpg/controller/')
 import calculations as calc
 import attacksJsonController as attacksCont
 import classesJsonController as classCont
+import statusesJsonController as statusCont
 
 
 def health_bar(health, max_health):
@@ -58,8 +59,6 @@ def playerEncounterCalc(player, newMonster, attack_used, monsterLvl):
   statusInflict = calc.checkIfStatus(attack_used, statusInflict)
   statusDmg = 0
   statusInhibit = False
-  """statusDmg, statusInhibit = calc.checkStatus(statusInflict,
-                                              newMonster['MaxHp'])"""
 
   statusInfo = calc.checkStatus(statusInflict, newMonster['MaxHp'])
   if statusInfo is not None:
@@ -68,59 +67,28 @@ def playerEncounterCalc(player, newMonster, attack_used, monsterLvl):
   newMonster['CurrentHp'] -= playerDmg + statusDmg
   monsterHpBar = health_bar(newMonster["CurrentHp"], newMonster["MaxHp"])
 
+  #if Game Over
   if newMonster['CurrentHp'] <= 0:
     playerHpBar = health_bar(player["CurrentHp"], player["MaxHp"])
     return player, newMonster, playerHpBar, monsterHpBar, playerDmg, None, None, True, newMonster[
-      'name'], player['name'], statusInflict, statusDmg
+      'name'], player[
+        'name'], statusInflict, statusDmg, statusInhibit, defModifier
+
+  #not Game Over
+  newMonster['status'] = statusInflict
+  playerHpBar = None
+  return player, newMonster, playerHpBar, monsterHpBar, playerDmg, None, None, False, None, None, statusInflict, statusDmg, statusInhibit, defModifier
 
 
-def simpleEncounter(player, newMonster, attack_used, monsterLvl):
-  monsterDmg = ""
+def monsterEncounterCalc(player, newMonster, monsterLvl, monsterHpBar,
+                         playerHpBar, defModifier):
+
   monsterAtkName = ""
-  #userAttack
-  attack_used = attacksCont.getAttacksByName(attack_used)
-  atkClass = classCont.getClassByName(attack_used['type'])
-  dmgModifier = calc.checkAdvantage(atkClass, newMonster['class'])
-  defModifier = 1
-  evasionModifier = 0
-  statusInflict = None
-
-  passiveCheck = calc.checkPassive(player['CurrentHp'], player['MaxHp'],
-                                   player['class'])
-  if passiveCheck is not None:
-    passive, passiveValue = passiveCheck
-    if passive == "dmgModifier":
-      dmgModifier *= passiveValue
-    elif passive == "defModifier":
-      defModifier = passiveValue
-    elif passive == "evade":
-      evasionModifier += passiveValue
-    elif passive == "status":
-      statusInflict = passiveValue
-
-  attack_power = attack_used['power']
-  playerDmg = calc.calculate_damage(player['lvl'], attack_power, player['atk'],
-                                    newMonster['defense'], dmgModifier)
-
-  statusInflict = calc.checkIfStatus(attack_used, statusInflict)
-  statusDmg = 0
+  monsterDmg = ""
+  #check if stunned
   statusInhibit = False
-  """statusDmg, statusInhibit = calc.checkStatus(statusInflict,
-                                              newMonster['MaxHp'])"""
-
-  statusInfo = calc.checkStatus(statusInflict, newMonster['MaxHp'])
-  if statusInfo is not None:
-    statusDmg, statusInhibit = statusInfo
-
-  newMonster['CurrentHp'] -= playerDmg + statusDmg
-  monsterHpBar = health_bar(newMonster["CurrentHp"], newMonster["MaxHp"])
-
-  if newMonster['CurrentHp'] <= 0:
-    playerHpBar = health_bar(player["CurrentHp"], player["MaxHp"])
-    return player, newMonster, playerHpBar, monsterHpBar, playerDmg, None, None, True, newMonster[
-      'name'], player['name'], statusInflict, statusDmg
-
-  #monsterAttack
+  if newMonster['status'] is not None:
+    statusInhibit = statusCont.checkIfInhibit(newMonster['status'])
   if not statusInhibit:
     monsterRandomAttack = random.choice(newMonster["attacks"])
     monsterAtkUsed = attacksCont.getAttacksByName(monsterRandomAttack)
@@ -137,10 +105,28 @@ def simpleEncounter(player, newMonster, attack_used, monsterLvl):
     player['CurrentHp'] -= monsterDmg
   playerHpBar = health_bar(player["CurrentHp"], player["MaxHp"])
   if player['CurrentHp'] <= 0:
-    return player, newMonster, playerHpBar, monsterHpBar, playerDmg, monsterDmg, monsterAtkName, True, player[
-      'name'], newMonster['name'], statusInflict, statusDmg
+    return player, newMonster, playerHpBar, monsterHpBar, monsterDmg, monsterAtkName, True, player[
+      'name'], newMonster['name'], statusInhibit
 
-  return player, newMonster, playerHpBar, monsterHpBar, playerDmg, monsterDmg, monsterAtkName, False, None, None, statusInflict, statusDmg
+  #if stunned
+  newMonster['status'] = None
+  statusInhibit = None
+  return player, newMonster, playerHpBar, monsterHpBar, monsterDmg, monsterAtkName, False, None, None, statusInhibit
+
+
+def simpleEncounter(player, newMonster, attack_used, monsterLvl):
+  monsterDmg = ""
+  monsterAtkName = ""
+  #userAttack
+  player, newMonster, playerHpBar, monsterHpBar, playerDmg, monsterDmg, monsterAtkName, isGameOver, loser, winner, statusInflict, statusDmg, statusInhibit, defModifier = playerEncounterCalc(
+    player, newMonster, attack_used, monsterLvl)
+
+  if not isGameOver:
+    #monsterAttack
+    player, newMonster, playerHpBar, monsterHpBar, monsterDmg, monsterAtkName, isGameOver, loser, winner, statusInhibit = monsterEncounterCalc(
+      player, newMonster, monsterLvl, monsterHpBar, playerHpBar, defModifier)
+
+  return player, newMonster, playerHpBar, monsterHpBar, playerDmg, monsterDmg, monsterAtkName, isGameOver, loser, winner, statusInflict, statusDmg
 
 
 def combatVSPc(player_dmg,
