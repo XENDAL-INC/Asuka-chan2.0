@@ -202,7 +202,8 @@ class RPGCommands(commands.Cog):
     avatar = ctx.author.display_avatar
     player = playerCont.getPlayersById(id)
 
-    randomLvlRange = random.randint(-2, 1)
+    randomRange = int(1 + (player['lvl'] * 0.3))
+    randomLvlRange = random.randint(-1 - randomRange, randomRange)
     monsterLvl = player['lvl'] + randomLvlRange
     if monsterLvl <= 0:
       monsterLvl = player['lvl']
@@ -273,8 +274,9 @@ class RPGCommands(commands.Cog):
               player['CurrentHp'] = player['MaxHp']
             else:
               startLvl = player['lvl']
+              expGained = calc.calcMonsterExp(newMonster['exp'], monsterLvl)
               player['lvl'], player['exp'] = calc.levelUp(
-                player['lvl'], newMonster['exp'], player['exp'])
+                player['lvl'], expGained, player['exp'])
               if startLvl < player['lvl']:
                 clss = classCont.getClassByName(player['class'])
                 player['MaxHp'] = calc.calc_hp(clss['hp'], player['lvl'])

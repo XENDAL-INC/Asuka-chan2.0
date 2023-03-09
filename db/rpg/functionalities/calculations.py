@@ -13,6 +13,14 @@ def calculate_damage(level, power, attack_stat, defense_stat, modifier):
   return damage
 
 
+def calcMonsterExp(monsterEXP, monsterLvl):
+  if monsterLvl > 1:
+    expGained = monsterEXP * (monsterLvl + 1)
+  else:
+    expGained = monsterEXP * (monsterLvl)
+  return expGained
+
+
 def levelUp(lvlStart, exp, player_exp):
   lvl = lvlStart
   # Calculate x value for given level
@@ -29,15 +37,15 @@ def levelUp(lvlStart, exp, player_exp):
     # Check if there is remaining exp to be gained
     if exp > 0:
       # Recursively call levelUp function with remaining exp
-      levelUp(lvl, exp, 0)
+      return levelUp(lvl, exp, 0)
 
-    # Return new level and player_exp
-    return lvl, player_exp
+    # Return new level and remaining exp
+    return lvl, int(exp)
 
   # If not enough exp to level up
   else:
     # Add gained exp to player_exp
-    player_exp = player_exp + exp
+    player_exp = int(player_exp + exp)
 
     # Return current level and updated player_exp
     return lvl, player_exp
