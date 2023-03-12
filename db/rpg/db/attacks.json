@@ -119,7 +119,20 @@
   "power": 40,
   "status": {
     "name": "Fear",
-    "chance": 10
+    "chance": 20
+  }
+},
+{
+  "id": 10,
+  "name": "Soul Siphon",
+  "type": "dark",
+  "lvl": 2,
+  "description": "Drains the target's life force, dealing moderate dark damage and healing the user",
+  "accuracy": 90,
+  "power": 55,
+  "status": {
+    "name": "Leech",
+    "chance": 20
   }
 }
 ]

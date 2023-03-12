@@ -93,7 +93,7 @@ def checkPassive(currentHp, MaxHp, type):
     elif type.lower() == "wind":
       return "evade", 0.30
     elif type.lower() == "dark":
-      return "status", "Fear"
+      return "healModifier", 0.20
   else:
     return None
 
@@ -109,7 +109,7 @@ def checkIfStatus(attack, statusInflict):
 
 def checkStatus(status, maxHp):
   if status is not None:
-    if status in ["Burn", "Bleed"]:
+    if status in ["Burn", "Bleed", "Leech"]:
       statusDmg = (maxHp * 0.05)
       return int(statusDmg), False
     elif status in ["Stun", "Freeze", "Fear"]:

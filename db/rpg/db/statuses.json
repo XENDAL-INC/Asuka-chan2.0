@@ -24,5 +24,10 @@
         "name": "Bleed",
         "dmg": 10,
         "inhibit": false
+    }, {
+        "id": 6,
+        "name": "Leech",
+        "dmg": 10,
+        "inhibit": false
     }]
 }

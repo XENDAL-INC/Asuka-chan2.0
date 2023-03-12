@@ -50,6 +50,24 @@ def showRPGChar(user, player, avatar):
   return embed
 
 
+def showAttack(attack, avatar):
+  embed = Embed()
+  embed.set_thumbnail(url=avatar)
+  embed.color = 0x4887c6
+  embed.title = "Attack Info"
+  fields = [("Attack Name", str(attack['name']), True),
+            ("Type", str(attack['type']), True),
+            ("Lvl", str(attack['lvl']), True),
+            ("Power", str(attack["power"]), False),
+            ("Accuracy", str(attack["accuracy"]), True),
+            ("Status", str(attack["status"]), False),
+            ("Description", str(attack['description']), False)]
+  for name, value, inline in fields:
+    embed.add_field(name=name, value=value, inline=inline)
+
+  return embed
+
+
 def showRPGEncounter(user, player, monster, avatar, playerHpBar, monsterHpBar,
                      monsterLvl):
   embed = Embed()
@@ -70,12 +88,13 @@ def showRPGEncounter(user, player, monster, avatar, playerHpBar, monsterHpBar,
     Button(style=nextcord.ButtonStyle.primary, label=attack)
     for attack in player["attacks"]
   ]
+  buttons.append(Button(style=nextcord.ButtonStyle.danger, label="Escape"))
   return embed, buttons
 
 
 def encounterOutcome(playerName, playerAtk, playerDmg, monsterName, monsterAtk,
                      monsterDmg, gameOver, loser, winner, statusInflict,
-                     statusDmg):
+                     statusDmg, healModifier):
   if not gameOver:
     if statusInflict is None:
       msg = f"{playerName} used {playerAtk} and dealt {playerDmg}!"
@@ -83,12 +102,76 @@ def encounterOutcome(playerName, playerAtk, playerDmg, monsterName, monsterAtk,
     else:
       msg = f"{playerName} used {playerAtk} and dealt {playerDmg}! ... WOW {playerName} also applied {statusInflict}!"
       if statusDmg > 0:
-        msg += f"\n{monsterName} received extra {statusDmg} dmg from {statusInflict}!"
+        if statusInflict == "Leech":
+          msg += f"\n{playerName} absorbed {statusDmg} HP from {monsterName}!"
+        else:
+          msg += f"\n{monsterName} received extra {statusDmg} dmg from {statusInflict}!"
         msg += f"\n{monsterName} used {monsterAtk} and dealt {monsterDmg}!"
       else:
         msg += f"\n{monsterName} couldn't attack due to {statusInflict}!"
 
+    if healModifier > 0:
+      msg += f"\n{playerName} regained {int(healModifier*(playerDmg + statusDmg))} from the dmg caused!"
+
   else:
     msg = f"{winner} has defeated {loser}!"
+
+  return msg
+
+
+def showRPGPvp(user1, user2, player1, player2, avatar, player1HpBar,
+               player2HpBar, turn):
+
+  embed = Embed()
+  embed.set_thumbnail(url=avatar)
+  embed.color = 0x4887c6
+  embed.title = f"{user1} vs. {user2}!"
+  buttons = [
+    Button(style=nextcord.ButtonStyle.primary, label=attack)
+    for attack in player1["attacks"]
+  ]
+  fields = [(f"{user1}'s Turn", "", False)]
+
+  if turn == 1:
+    buttons = [
+      Button(style=nextcord.ButtonStyle.primary, label=attack)
+      for attack in player2["attacks"]
+    ]
+    fields = [(f"{user2}'s Turn", "", False)]
+
+  fields.extend([(f"{user2}'s Character", str(player2["name"]), True),
+                 ("Lvl", str(player2["lvl"]), True),
+                 ("EXP", str(player2["exp"]), True), (player2HpBar, "", False),
+                 (f"{user1}'s Character", str(player1["name"]), True),
+                 ("Lvl", str(player1["lvl"]), True),
+                 ("EXP", str(player1["exp"]), True), (player1HpBar, "", False),
+                 ("Attacks", "", True)])
+  for name, value, inline in fields:
+    embed.add_field(name=name, value=value, inline=inline)
+
+  buttons.append(Button(style=nextcord.ButtonStyle.danger, label="Surrender"))
+
+  return embed, buttons
+
+
+def pvpOutcome(attackerName, attack_used, playerDmg, defenderName, gameOver,
+               statusInflict, statusDmg, healModifier):
+  if not gameOver:
+    msg = f"{attackerName} used {attack_used} and dealt {playerDmg}!"
+    if statusInflict is not None:
+      msg += f"... WOW {attackerName} also applied {statusInflict}!"
+      if statusDmg > 0:
+        if statusInflict == "Leech":
+          msg += f"\n{attackerName} absorbed {statusDmg} HP from {defenderName}!"
+        else:
+          msg += f"\n{defenderName} received extra {statusDmg} dmg from {statusInflict}!"
+      else:
+        msg += f"\n{defenderName} couldn't attack due to {statusInflict}!"
+
+    if healModifier > 0:
+      msg += f"\n{attackerName} regained {int(healModifier*(playerDmg + statusDmg))} from the dmg caused!"
+
+  else:
+    msg = f"{attackerName} has defeated {defenderName}!"
 
   return msg

@@ -35,7 +35,7 @@ def getAllAttacksByTypeAndLevel(type, lvl):
 def getAttacksByName(name):
   attacks = getAllAttacks()
   for attack in attacks:
-    if attack["name"] == name:
+    if attack["name"].lower() == name.lower():
       return attack
   return None
 
