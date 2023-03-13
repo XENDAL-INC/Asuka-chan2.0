@@ -192,7 +192,9 @@ class RPGCommands(commands.Cog):
       embed = intMsg.showRPGChar(user.name, player, avatar)
       await ctx.send(embed=embed)
     else:
-      await ctx.send(f"Sorry, but i couldn't find {user.mention}'s Character")
+      await ctx.send(
+        f"Sorry, but i couldn't find {user.mention}'s Character, make sure they created a character by using the createChar command"
+      )
 
   @commands.command(brief="Shows the specified attack's info.")
   async def showAtk(self, ctx, *, atk_name: str):
@@ -215,6 +217,11 @@ class RPGCommands(commands.Cog):
   async def encounter(self, ctx):
     user = ctx.author.name
     id = ctx.author.id
+    if playerCont.getPlayersById(id) is None:
+      await ctx.send(
+        f"{ctx.author.mention}, it appears u haven't created a character yet b-baka! pls use the createChar command first!"
+      )
+      return
     if str(id) not in self.encounters:
       self.encounters[str(id)] = {
         'player': None,
@@ -231,7 +238,6 @@ class RPGCommands(commands.Cog):
       return
     avatar = ctx.author.display_avatar
     player = playerCont.getPlayersById(id)
-
     randomRange = int(1 + (player['lvl'] * 0.3))
     randomLvlRange = random.randint(-1 - randomRange, randomRange)
     monsterLvl = player['lvl'] + randomLvlRange
@@ -369,32 +375,43 @@ class RPGCommands(commands.Cog):
   async def fight(self, ctx):
     user1 = ctx.author
 
+    if playerCont.getPlayersById(
+        user1.id) is None:  #check if player has a character
+      await ctx.send(
+        f"{user1.mention} pls.... create a character first by using the command createChar. Don't waste my time b-baka!"
+      )
+      return
+
     if str(user1.id
            ) in self.encounters:  #check if player is already in an encounter
       await ctx.send(
-        "pls... finish your encounter first before trying to fight someone else..."
+        f"{user1.mention} pls... finish your encounter first before trying to fight someone else..."
       )
       return
 
     if not ctx.message.mentions:  #check if player mentioned another player
-      await ctx.send("u must mention another user to fight against... baka")
+      await ctx.send(
+        f"{user1.mention}, u must mention another user to fight against... baka"
+      )
       return
     user2 = ctx.message.mentions[0]
 
     if user2 == user1:  #check if player did not mention themselves
-      await ctx.send(".... u can't fight yourself... baka")
+      await ctx.send(f"{user1.mention}.... u can't fight yourself... baka")
       return
 
     if user2.bot:  #check if player is not a bot
-      await ctx.send(".... u can't fight against a bot... baka")
+      await ctx.send(f"{user1.mention}.... u can't fight against a bot... baka"
+                     )
       return
 
     player1 = playerCont.getPlayersById(user1.id)
     player2 = playerCont.getPlayersById(user2.id)
 
-    if player1 is None or player2 is None:  #check if both players have a character
+    if player2 is None:  #check if player2 has a character
       await ctx.send(
-        "either u or the user u mentioned didn't create a character yet!")
+        f"{user1.mention}, the user u mentioned didn't create a character yet.... make sure to fight against a real character b-baka!"
+      )
       return
 
     player1["CurrentHp"] = player1["MaxHp"]
@@ -437,15 +454,15 @@ class RPGCommands(commands.Cog):
       for button_item in buttons:
         if button_item.custom_id == custom_id:
           if button_item.label.lower() == "surrender":  #check if surrender
-            msgContent = ""
+            msgContent = f"{interaction.user.mention} has **Surrendered!**, "
             if turn == 0:
-              msgContent = intMsg.pvpOutcome(player2['name'], None, None,
-                                             player1['name'], True, None, None,
-                                             None)
+              msgContent += intMsg.pvpOutcome(player2['name'], None, None,
+                                              player1['name'], True, None,
+                                              None, None)
             else:
-              msgContent = intMsg.pvpOutcome(player1['name'], None, None,
-                                             player2['name'], True, None, None,
-                                             None)
+              msgContent += intMsg.pvpOutcome(player1['name'], None, None,
+                                              player2['name'], True, None,
+                                              None, None)
             await interaction.response.edit_message(content=msgContent,
                                                     view=None)
             return
