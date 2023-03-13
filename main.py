@@ -52,6 +52,7 @@ async def on_ready():
   #client.load_extension('cogs.keep_alive')
   #client.load_extension('cogs.test')
   #client.load_extension('cogs.mastercommands')
+  client.load_extension('cogs.customHelp')
   print('We have logged in as {0.user}'.format(client))
   await client.change_presence(status=nextcord.Status.do_not_disturb,
                                activity=nextcord.Activity(

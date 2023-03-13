@@ -29,9 +29,9 @@ class RPGCommands(commands.Cog):
     self.encounters = {}
     self.fights = {}
 
-  @commands.command()
+  @commands.command(brief="Shows the character creation menu for the RPG game."
+                    )
   async def createChar(self, ctx):
-    """ Shows the character creation menu for the RPG game. """
     user = ctx.author.name
     id = ctx.author.id
     avatar = ctx.author.display_avatar
@@ -179,9 +179,8 @@ class RPGCommands(commands.Cog):
 
     message = await ctx.send(embed=embed, view=view)
 
-  @commands.command()
+  @commands.command(brief="Shows the mentioned user's RPG Character info.")
   async def showChar(self, ctx):
-    """ Shows the mentioned user's RPG Character info. """
     user = ctx.author
     if ctx.message.mentions:
       user = ctx.message.mentions[0]
@@ -195,9 +194,8 @@ class RPGCommands(commands.Cog):
     else:
       await ctx.send(f"Sorry, but i couldn't find {user.mention}'s Character")
 
-  @commands.command()
+  @commands.command(brief="Shows the specified attack's info.")
   async def showAtk(self, ctx, *, atk_name: str):
-    """ Shows the specified attack's info. """
     user = ctx.author
     if not atk_name:
       await ctx.send(
@@ -213,9 +211,8 @@ class RPGCommands(commands.Cog):
         f"Sorry {user.mention}, but I could't find the attack specified")
       return
 
-  @commands.command()
+  @commands.command(brief="Starts and RPG encounter against the AI.")
   async def encounter(self, ctx):
-    """ Starts and RPG encounter against the AI. """
     user = ctx.author.name
     id = ctx.author.id
     if str(id) not in self.encounters:
@@ -227,8 +224,8 @@ class RPGCommands(commands.Cog):
         'playerDmg': None,
         'monsterDmg': None,
         'monsterLvl': None,
+        'counter': 120
       }
-      #print(self.encounters)
     else:
       await ctx.send("u are already in an encounter")
       return
@@ -262,6 +259,15 @@ class RPGCommands(commands.Cog):
     self.encounters[str(id)]['playerHpBar'] = playerHpBar
     self.encounters[str(id)]['monsterHpBar'] = monsterHpBar
     self.encounters[str(id)]['monsterLvl'] = monsterLvl
+
+    async def sleep_with_counter(id):
+      try:
+        while self.encounters[str(id)]['counter'] > 0:
+          await asyncio.sleep(1)
+          self.encounters[str(id)]['counter'] -= 1
+        return
+      except:
+        return
 
     async def callback(interaction: nextcord.Interaction):
       if id != interaction.user.id:
@@ -341,6 +347,7 @@ class RPGCommands(commands.Cog):
           self.encounters[str(interaction.user.id)]['monsterLvl'] = monsterLvl
           await interaction.response.edit_message(content=msgContent,
                                                   embed=embed)
+          self.encounters[str(interaction.user.id)]['counter'] = 120
           break
 
     view = View()
@@ -349,10 +356,17 @@ class RPGCommands(commands.Cog):
       button_item.callback = callback
 
     message = await ctx.send(embed=embed, view=view)
+    await sleep_with_counter(id)
+    await message.edit(view=None)
+    try:  #check if encounter didnt already got deleted
+      playerCont.updateSinglePlayerInfo(self.encounters[str(id)]['player'], id)
+      del self.encounters[str(id)]
+      await ctx.send("TimeOut!")
+    except:
+      return
 
-  @commands.command()
+  @commands.command(brief="Starts a RPG fight against the mentioned user.")
   async def fight(self, ctx):
-    """ Starts a RPG fight against the mentioned user. """
     user1 = ctx.author
 
     if str(user1.id
