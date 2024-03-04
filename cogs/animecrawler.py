@@ -210,7 +210,7 @@ class animecrawler(commands.Cog):
       embed = Embed()
       embed.color = 0x1a59ce  #10181046
       embed.title = obj[choice].title
-      #embed.set_image(url=obj[choice].thumbnail)
+      embed.set_image(url=obj[choice].thumbnail)
       embed.description = printAnimeInfo(choice, obj)
       embed.set_footer(text='Page 1/2')
       synopsisEmbed = Embed()
@@ -278,7 +278,7 @@ class animecrawler(commands.Cog):
       embed = Embed()
       embed.color = 0x1a59ce
       embed.title = obj[choice].title
-      #embed.set_image(url=obj[choice].thumbnail)
+      embed.set_image(url=obj[choice].thumbnail)
       embed.description = printAnimeInfo(choice, obj)
       embed.set_footer(text='Page 1/2')
       synopsisEmbed = Embed()
@@ -344,7 +344,7 @@ class animecrawler(commands.Cog):
       embed = Embed()
       embed.color = 0x1a59ce
       embed.title = obj[choice].title
-      #embed.set_image(url=obj[choice].thumbnail)
+      embed.set_image(url=obj[choice].thumbnail)
       embed.description = printAnimeInfo(choice, obj)
       embed.set_footer(text='Page 1/2')
       synopsisEmbed = Embed()

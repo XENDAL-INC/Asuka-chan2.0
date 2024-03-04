@@ -1,72 +1,37 @@
-from nextcord import DMChannel
+import nextcord
 from nextcord.ext import commands
-import time
+
 
 class mastercommands(commands.Cog):
+
   def _init_(self, bot):
     self.bot = bot
 
-  @commands.command(hidden=True)
-  async def updatepfp(self, ctx):
-    if ctx.author.name == "XENDAL_INC":
+  @nextcord.slash_command(name='updatepfp',
+                          description="update pfp for asuka-chan.",
+                          guild_ids=[720672074070360064])
+  async def updatepfp(self, interaction):
+    if interaction.user.id == 380016239310929931:
       pfp_path = "update/pfp.png"
       fp = open(pfp_path, 'rb')
       pfp = fp.read()
-      await self.bot.user.edit(avatar=pfp)
-      await ctx.channel.purge(limit=1)
-      user = await self.bot.fetch_user(ctx.author.id)
-      await DMChannel.send(
-          user,
-          "My pfp has been updated successfully thx MASTER!:heart:\nhttps://tenor.com/05fP.gif"
-      )
-  
-  @commands.command(hidden=True)
-  async def sendDM(self, ctx):
-    if ctx.author.name == "XENDAL_INC":
-      temp = ctx.author.id;
-      user = await self.bot.fetch_user(ctx.author.id)
-      if not ctx.message.mentions:
-        await DMChannel.send(user, "pls mention someone MASTER!")
-      else:
-        await ctx.channel.purge(limit=1)
-        msg=""
-        dmfeedback = await DMChannel.send(user, "pls procede and type the message u want to send MASTER!")
-        time.sleep(2)
-        await dmfeedback.delete()
-        def check(m):
-          return m.author.name == "XENDAL_INC"
-        response = await self.bot.wait_for('message', check=check)
-        msg=response.content
-        #response.channel.purge(limit=1)
-        response.delete()
-        
-        for i in ctx.message.mentions:
-          mentioned = await ctx.fetch_user(i.id)
-          await DMChannel.send(mentioned, msg + temp)
+      await interaction.client.user.edit(avatar=pfp)
+      await interaction.response.send_message(
+        "My pfp has been updated successfully thx MASTER!:heart:\nhttps://tenor.com/05fP.gif",
+        ephemeral=True)
 
-  @commands.command(hidden=True)
-  async def sendDMbyID(self, ctx, *, args):
-    if ctx.author.name == "XENDAL_INC":
-      #temp = ctx.author.id;
-      user = self.bot.fetch_user(ctx.author.id)
-      if not args=="" and args==" ":
-        dmID = args
-        #await ctx.message.delete
-        msg=""
-        dmfeedback = await DMChannel.send(user, "pls procede and type the message u want to send MASTER!")
-        time.sleep(2)
-        await dmfeedback.delete()
-        def check(m):
-          return m.author.name == "XENDAL_INC"
-        response = await self.bot.wait_for('message', check=check)
-        msg=response.content
-        #response.channel.purge(limit=1)
-        target = await ctx.message.fetch_user(dmID)
-        await DMChannel.send(target, msg)
-      else:
-        dmfeedback = await DMChannel.send(user, "pls mention someone MASTER!")
-        time.sleep(2)
-        await dmfeedback.delete()
+  @nextcord.slash_command(name='dmsend',
+                          description="send DM by user ID thorugh asuka-chan.",
+                          guild_ids=[720672074070360064])
+  async def sendDMbyID(self, interaction, *, target_id, message: str):
+    if interaction.user.id == 380016239310929931:
+      target = await interaction.client.fetch_user(target_id)
+      target_dm = await target.create_dm()
+      await target_dm.send(content=message)
+      await interaction.response.send_message(
+        "Message was sent successfully to " + target.name + "!",
+        ephemeral=True)
+
 
 def setup(bot):
   bot.add_cog(mastercommands(bot))

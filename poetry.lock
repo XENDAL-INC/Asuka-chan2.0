@@ -278,6 +278,37 @@ speed = ["orjson (>=3.5.4)", "aiodns (>=1.1)", "brotli", "cchardet"]
 voice = ["PyNaCl (>=1.3.0,<1.5)"]
 
 [[package]]
+name = "openai"
+version = "0.27.7"
+description = "Python client library for the OpenAI API"
+category = "main"
+optional = false
+python-versions = ">=3.7.1"
+
+[package.dependencies]
+aiohttp = "*"
+requests = ">=2.20"
+tqdm = "*"
+
+[package.extras]
+datalib = ["numpy", "pandas (>=1.2.3)", "pandas-stubs (>=1.1.0.11)", "openpyxl (>=3.0.7)"]
+dev = ["black (>=21.6b0,<22.0.0)", "pytest (>=6.0.0,<7.0.0)", "pytest-asyncio", "pytest-mock"]
+embeddings = ["scikit-learn (>=1.0.2)", "tenacity (>=8.0.1)", "matplotlib", "plotly", "numpy", "scipy", "pandas (>=1.2.3)", "pandas-stubs (>=1.1.0.11)", "openpyxl (>=3.0.7)"]
+wandb = ["wandb", "numpy", "pandas (>=1.2.3)", "pandas-stubs (>=1.1.0.11)", "openpyxl (>=3.0.7)"]
+
+[[package]]
+name = "pillow"
+version = "9.5.0"
+description = "Python Imaging Library (Fork)"
+category = "main"
+optional = false
+python-versions = ">=3.7"
+
+[package.extras]
+docs = ["furo", "olefile", "sphinx (>=2.4)", "sphinx-copybutton", "sphinx-inline-tabs", "sphinx-removed-in", "sphinxext-opengraph"]
+tests = ["check-manifest", "coverage", "defusedxml", "markdown2", "olefile", "packaging", "pyroma", "pytest", "pytest-cov", "pytest-timeout"]
+
+[[package]]
 name = "pycparser"
 version = "2.21"
 description = "C parser in Python"
@@ -292,6 +323,14 @@ description = "Cryptographic library for Python"
 category = "main"
 optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
+
+[[package]]
+name = "pydub"
+version = "0.25.1"
+description = "Manipulate audio with an simple and easy high level interface"
+category = "main"
+optional = false
+python-versions = "*"
 
 [[package]]
 name = "pynacl"
@@ -341,6 +380,23 @@ description = "A modern CSS selector implementation for Beautiful Soup."
 category = "main"
 optional = false
 python-versions = ">=3.6"
+
+[[package]]
+name = "tqdm"
+version = "4.65.0"
+description = "Fast, Extensible Progress Meter"
+category = "main"
+optional = false
+python-versions = ">=3.7"
+
+[package.dependencies]
+colorama = {version = "*", markers = "platform_system == \"Windows\""}
+
+[package.extras]
+dev = ["py-make (>=0.1.0)", "twine", "wheel"]
+notebook = ["ipywidgets (>=6)"]
+slack = ["slack-sdk"]
+telegram = ["requests"]
 
 [[package]]
 name = "urllib3"
@@ -421,7 +477,7 @@ websockets = "*"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "f3eb4b21f9247dbb50b39b128a477e4793396f8d694b3ed96e1cf00922dade68"
+content-hash = "fcbe8a91e81c27d2c4051d7ca1c4862381483e09b43868fda570be202ae4ade2"
 
 [metadata.files]
 aiohttp = []
@@ -449,12 +505,16 @@ markupsafe = []
 multidict = []
 mutagen = []
 nextcord = []
+openai = []
+pillow = []
 pycparser = []
 pycryptodomex = []
+pydub = []
 pynacl = []
 pytube = []
 requests = []
 soupsieve = []
+tqdm = []
 urllib3 = []
 utils = []
 websockets = []

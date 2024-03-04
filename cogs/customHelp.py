@@ -24,7 +24,24 @@ class Help(nextcord.ext.commands.HelpCommand):
       embed.add_field(name=cog_name,
                       value="\n".join(command_list),
                       inline=False)
-    await self.context.author.send(embed=embed)
+
+    # Split fields into pages
+    fields = embed.fields
+    max_fields = 5  # Maximum number of fields per page
+    pages = [
+      fields[i:i + max_fields] for i in range(0, len(fields), max_fields)
+    ]
+
+    # Send pages as separate messages
+    for i, page in enumerate(pages):
+      page_embed = nextcord.Embed(title=f"Help ({i+1}/{len(pages)})",
+                                  description="List of available commands:")
+      for field in page:
+        page_embed.add_field(name=field.name,
+                             value=field.value,
+                             inline=field.inline)
+      await self.context.author.send(embed=page_embed)
+
     await self.context.message.delete()
 
 
