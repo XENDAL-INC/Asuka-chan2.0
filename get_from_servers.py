@@ -29,6 +29,11 @@ def get_honorifics(id):
 global gifsPath
 gifsPath = "db/gifs.asdb"
 
+asuka = 842228270400536586
+master = 380016239310929931
+
+#############################################################
+
 
 def open_gifs(gifDB=None):
   if gifDB == None:

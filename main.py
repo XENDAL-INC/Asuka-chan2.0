@@ -1,7 +1,7 @@
 import nextcord
 from nextcord.ext import commands
 import os
-from keep_alive import keep_alive
+#from keep_alive import keep_alive
 import json
 
 #import subprocess
@@ -61,7 +61,6 @@ async def on_ready():
                                  type=nextcord.ActivityType.listening,
                                  name="XENDAL-Sama"))
 
-  #uncomment when adding new slashcommands
   for server in testServers:
     await client.sync_application_commands(data=None,
                                            guild_id=server,
@@ -69,10 +68,11 @@ async def on_ready():
                                            delete_unknown=True,
                                            update_known=True,
                                            register_new=True)
-  """commands = client.get_all_application_commands()
+  '''commands = client.get_all_application_commands()
   for command in commands:
-    print(f'{command.name} - {str(command.guild_ids)}')"""
+    print(f'{command.name} - {str(command.guild_ids)}')'''
+  print("commands sync done!")
 
 
-keep_alive()
+#keep_alive()
 client.run(os.getenv('TOKEN'))

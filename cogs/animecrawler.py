@@ -1,10 +1,11 @@
 import nextcord
-from nextcord.ext import commands
 from nextcord import Embed
-#from nextcord import Button, ButtonStyle
-import requests
+from nextcord.ext import commands
+from nextcord.ui import StringSelect, View
 from bs4 import BeautifulSoup
 import asyncio
+import requests
+import get_from_servers as asukaDB
 
 
 class Anime:
@@ -26,65 +27,83 @@ class Anime:
   thumbnail = ""
 
 
-def searchAnimeInfo(url, obj):
+#########################################################################
+
+
+def searchAnimeInfo(args):
+  obj = []
+  url = "https://myanimelist.net/search/all?cat=all&q=" + args.replace(
+    " ", "%20", -1)
+
   source_code = requests.get(url)
   plain_text = source_code.text
   soup = BeautifulSoup(plain_text, "html.parser")
   ct = 0
-  tstring = ""
   for link in soup.findAll('a', {'class': 'hoverinfo_trigger fw-b fl-l'}):
     if ct < 5:
       temp = Anime()
       temp.title = str(link.contents).replace("['", "", -1)
       temp.title = temp.title.replace("']", "", -1)
       temp.link = link.get('href')
-      tstring += "\n**" + str(ct + 1) + ")** " + temp.title
       obj.append(temp)
       ct += 1
     else:
       break
-  return tstring
+  tstring = "Choose one of the animes below for more info."
+  return tstring, obj
 
 
-def searchTopAnime(url, obj):
+#########################################################################
+
+
+def searchTopAnime():
+  obj = []
+  url = "https://myanimelist.net/topanime.php?type=bypopularity"
   source_code = requests.get(url)
   plain_text = source_code.text
   soup = BeautifulSoup(plain_text, "html.parser")
   ct = 0
-  tstring = ""
-  for link in soup.findAll(
-      'h3', {'class': 'hoverinfo_trigger fl-l fs14 fw-b anime_ranking_h3'}):
+  for link in soup.findAll('h3', {'class': 'fl-l fs14 fw-b anime_ranking_h3'}):
     if ct < 10:
       temp = Anime()
       tlink = link.find('a')
       temp.title = str(tlink.next_element)
       temp.link = tlink.get('href')
-      tstring += "\n**" + str(ct + 1) + ")** " + temp.title
       obj.append(temp)
       ct += 1
     else:
       break
-  return tstring
+
+  tstring = "Choose one of the animes below for more info."
+  return tstring, obj
 
 
-def searchSeasonAnime(url, obj):
+#########################################################################
+
+
+def searchSeasonAnime():
+  obj = []
+  url = "https://myanimelist.net/anime/season"
   source_code = requests.get(url)
   plain_text = source_code.text
   soup = BeautifulSoup(plain_text, "html.parser")
   ct = 0
-  tstring = ""
   for link in soup.findAll('h2', {'class': 'h2_anime_title'}):
     if ct < 20:
       temp = Anime()
       tlink = link.find('a')
       temp.title = str(tlink.next_element)
       temp.link = tlink.get('href')
-      tstring += "\n**" + str(ct + 1) + ")** " + temp.title
       obj.append(temp)
       ct += 1
     else:
       break
-  return tstring
+
+  tstring = "Choose one of the animes below for more info."
+  return tstring, obj
+
+
+#########################################################################
 
 
 def getTextInfo(soup, text):
@@ -111,6 +130,9 @@ def getTextInfo(soup, text):
           ct += 1
       break
   return content
+
+
+#########################################################################
 
 
 def getInfo(index, obj):
@@ -147,9 +169,26 @@ def getInfo(index, obj):
   obj[index].synopsis = str(obj[index].synopsis.replace("<i>", "***", -1))
   obj[index].synopsis = str(obj[index].synopsis.replace("</i>", "***", -1))
 
+  embed = Embed()
+  embed.color = 0x1a59ce  #10181046
+  embed.title = obj[index].title
+  embed.set_image(url=obj[index].thumbnail)
+  embed.description = printAnimeInfo(index, obj)
+  embed.set_footer(text='Page 1/2')
+
+  synopsisEmbed = Embed()
+  synopsisEmbed.set_footer(text='Page 2/2')
+  synopsisEmbed.color = 0x1a59ce  #10181046
+  synopsisEmbed.title = obj[index].title
+  synopsisEmbed.description = "**Synopsis: **" + obj[index].synopsis
+
+  return embed, synopsisEmbed
+
+
+#########################################################################
+
 
 def printAnimeInfo(index, obj):
-  #animeTest="\n\n##########################################\n"
   animeTest = ""
   animeTest += "**Title: **" + obj[index].title
   animeTest += "\n**Type: **" + obj[index].type
@@ -165,9 +204,86 @@ def printAnimeInfo(index, obj):
   animeTest += "\n**Rating: **" + obj[index].rating
   animeTest += "\n**Score: **" + obj[index].score
   animeTest += "\n" + obj[index].link
-  #animeTest+="\n**Synopsis: **" + obj[index].synopsis
-  #animeTest+="\n##########################################"
+
   return animeTest
+
+
+#########################################################################
+
+
+async def controllerFunc(self, msgController, cmd, msg, obj):
+  choice = None
+  if (cmd == "interaction"):
+    author = msgController.user
+  else:
+    author = msgController.author
+
+  view = View()
+  selectOptions = StringSelect(custom_id='selction0',
+                               placeholder='-- choose anime --',
+                               min_values=1,
+                               max_values=1)
+
+  for i in range(len(obj)):
+    title = obj[i].title
+    shortened_title = title[:50] if len(title) > 50 else title
+    selectOptions.add_option(label=str(i + 1) + " - " + shortened_title,
+                             value=str(i))
+
+  async def handle_select(interaction):
+    nonlocal choice
+    selected_value = interaction.data['values'][0]
+    choice = int(selected_value)
+    view.stop()
+
+  selectOptions.callback = handle_select
+  view.add_item(selectOptions)
+
+  if cmd == "interaction":
+    chooseMsg = await msgController.send(content=msg,
+                                         view=view,
+                                         ephemeral=True)
+  else:
+    chooseMsg = await msgController.send(content=msg, view=view)
+  await view.wait()
+
+  try:
+    await chooseMsg.delete()
+    embed, synopsisEmbed = getInfo(choice, obj)
+    embedMessage = await msgController.channel.send(embed=embed)
+    await embedMessage.add_reaction("▶️")
+    embedCt = -1
+
+    def checkReaction(reaction, user):
+      global userReact
+      if reaction.message == embedMessage and reaction.emoji == "▶️":
+        if user.id == asukaDB.asuka:
+          userReact = author
+        else:
+          userReact = user
+          return True
+
+    try:
+      emoji = "▶️"
+      while await self.bot.wait_for('reaction_add',
+                                    check=checkReaction,
+                                    timeout=60):
+        embedCt *= -1
+        await embedMessage.remove_reaction(emoji, userReact)
+        if embedCt == 1:
+          await embedMessage.edit(embed=synopsisEmbed)
+        else:
+          await embedMessage.edit(embed=embed)
+
+    except asyncio.TimeoutError:
+      if embedMessage != None:
+        await embedMessage.remove_reaction(emoji, asukaDB.asuka)
+      return
+  except Exception as e:
+    print(e)
+
+
+#########################################################################
 
 
 class animecrawler(commands.Cog):
@@ -179,212 +295,50 @@ class animecrawler(commands.Cog):
   async def searchAnime(self, ctx, *, args):
     """ Search Anime info. """
 
-    currentp = ctx.author.id
-    obj = []
-    temp = ""
+    msg, obj = searchAnimeInfo(args)
+    await controllerFunc(self, ctx, "ctx", msg, obj)
 
-    def check(m):
-      return m.author.id == currentp and m.channel == ctx.channel
+  @nextcord.slash_command(name='searchanime',
+                          description="search given anime on myanimelist db",
+                          guild_ids=asukaDB.testServers)
+  async def searchAnimeSlash(self, interaction, *, anime: str):
+    await interaction.response.defer(ephemeral=True, with_message=True)
 
-    try:
-      temp = args
-    except:
-      await ctx.send(
-        "pls don't waste my time, next time remember to write what anime you want to search b-baka"
-      )
-      return
+    msg, obj = searchAnimeInfo(anime)
+    await controllerFunc(self, interaction, "interaction", msg, obj)
 
-    search = "https://myanimelist.net/search/all?cat=all&q=" + temp.replace(
-      " ", "%20", -1)
-    await ctx.send(searchAnimeInfo(search, obj))
-
-    await ctx.send("Choose one of the results above.")
-    try:
-      response = await self.bot.wait_for("message", check=check, timeout=60)
-    except asyncio.TimeoutError:
-      return
-    try:
-      choice = int(response.content)
-      choice -= 1
-      getInfo(choice, obj)
-      embed = Embed()
-      embed.color = 0x1a59ce  #10181046
-      embed.title = obj[choice].title
-      embed.set_image(url=obj[choice].thumbnail)
-      embed.description = printAnimeInfo(choice, obj)
-      embed.set_footer(text='Page 1/2')
-      synopsisEmbed = Embed()
-      synopsisEmbed.set_footer(text='Page 2/2')
-      synopsisEmbed.color = 0x1a59ce  #10181046
-      synopsisEmbed.title = obj[choice].title
-      synopsisEmbed.description = "**Synopsis: **" + obj[choice].synopsis
-      #embed.set_thumbnail(url=obj[choice].thumbnail)
-      embedMessage = await ctx.send(embed=embed)
-      asuka = embedMessage.author
-      await embedMessage.add_reaction("▶️")
-      embedCt = -1
-
-      def checkReaction(reaction, user):
-        global userReact
-        if reaction.message == embedMessage and reaction.emoji == "▶️":
-          if user == asuka:
-            userReact = ctx.author
-          else:
-            userReact = user
-            return True
-
-      try:
-        emoji = "▶️"
-        while await self.bot.wait_for('reaction_add',
-                                      check=checkReaction,
-                                      timeout=60):
-          embedCt *= -1
-          await embedMessage.remove_reaction(emoji, userReact)
-          if embedCt == 1:
-            await embedMessage.edit(embed=synopsisEmbed)
-          else:
-            await embedMessage.edit(embed=embed)
-
-      except asyncio.TimeoutError:
-        await embedMessage.remove_reaction(emoji, asuka)
-        return
-
-    except Exception as e:
-      print(e)
-      await ctx.send("Invalid response b-baka!")
-
+  #########################################################################
   @commands.command()
   async def topAnime(self, ctx):
     """ Search Top 10 Anime. """
 
-    currentp = ctx.author.id
-    obj = []
+    msg, obj = searchTopAnime()
+    await controllerFunc(self, ctx, "ctx", msg, obj)
 
-    def check(m):
-      return m.author.id == currentp and m.channel == ctx.channel
+  @nextcord.slash_command(name='topanime',
+                          description="Search Top 10 Anime on myanimelist db",
+                          guild_ids=asukaDB.testServers)
+  async def topAnimeSlash(self, interaction):
+    await interaction.response.defer(ephemeral=True, with_message=True)
+    msg, obj = searchTopAnime()
+    await controllerFunc(self, interaction, "interaction", msg, obj)
 
-    await ctx.send(
-      searchTopAnime("https://myanimelist.net/topanime.php?type=bypopularity",
-                     obj))
-    await ctx.send("Choose one of the results above for more info.")
-    try:
-      response = await self.bot.wait_for("message", check=check, timeout=60)
-    except asyncio.TimeoutError:
-      return
-    try:
-      choice = int(response.content)
-      choice -= 1
-      getInfo(choice, obj)
-      embed = Embed()
-      embed.color = 0x1a59ce
-      embed.title = obj[choice].title
-      embed.set_image(url=obj[choice].thumbnail)
-      embed.description = printAnimeInfo(choice, obj)
-      embed.set_footer(text='Page 1/2')
-      synopsisEmbed = Embed()
-      synopsisEmbed.set_footer(text='Page 2/2')
-      synopsisEmbed.color = 0x1a59ce
-      synopsisEmbed.title = obj[choice].title
-      synopsisEmbed.description = "**Synopsis: **" + obj[choice].synopsis
-      #embed.set_thumbnail(url=obj[choice].thumbnail)
-      embedMessage = await ctx.send(embed=embed)
-      asuka = embedMessage.author
-      await embedMessage.add_reaction("▶️")
-      embedCt = -1
-
-      def checkReaction(reaction, user):
-        global userReact
-        if reaction.message == embedMessage and reaction.emoji == "▶️":
-          if user == asuka:
-            userReact = ctx.author
-          else:
-            userReact = user
-            return True
-
-      try:
-        emoji = "▶️"
-        while await self.bot.wait_for('reaction_add',
-                                      check=checkReaction,
-                                      timeout=60):
-          embedCt *= -1
-          await embedMessage.remove_reaction(emoji, userReact)
-          if embedCt == 1:
-            await embedMessage.edit(embed=synopsisEmbed)
-          else:
-            await embedMessage.edit(embed=embed)
-
-      except asyncio.TimeoutError:
-        await embedMessage.remove_reaction(emoji, asuka)
-        return
-    except Exception as e:
-      print(e)
-      await ctx.send("Invalid response b-baka!")
-
+  #########################################################################
   @commands.command()
   async def seasonAnime(self, ctx):
     """ Search current Season Anime. """
 
-    currentp = ctx.author.id
-    obj = []
+    msg, obj = searchSeasonAnime()
+    await controllerFunc(self, ctx, "ctx", msg, obj)
 
-    def check(m):
-      return m.author.id == currentp and m.channel == ctx.channel
-
-    await ctx.send(
-      searchSeasonAnime("https://myanimelist.net/anime/season", obj))
-    await ctx.send("Choose one of the results above for more info.")
-    try:
-      response = await self.bot.wait_for("message", check=check, timeout=60)
-    except asyncio.TimeoutError:
-      return
-    try:
-      choice = int(response.content)
-      choice -= 1
-      getInfo(choice, obj)
-      embed = Embed()
-      embed.color = 0x1a59ce
-      embed.title = obj[choice].title
-      embed.set_image(url=obj[choice].thumbnail)
-      embed.description = printAnimeInfo(choice, obj)
-      embed.set_footer(text='Page 1/2')
-      synopsisEmbed = Embed()
-      synopsisEmbed.set_footer(text='Page 2/2')
-      synopsisEmbed.color = 0x1a59ce
-      synopsisEmbed.title = obj[choice].title
-      synopsisEmbed.description = "**Synopsis: **" + obj[choice].synopsis
-      #embed.set_thumbnail(url=obj[choice].thumbnail)
-      embedMessage = await ctx.send(embed=embed)
-      asuka = embedMessage.author
-      await embedMessage.add_reaction("▶️")
-      embedCt = -1
-
-      def checkReaction(reaction, user):
-        global userReact
-        if reaction.message == embedMessage and reaction.emoji == "▶️":
-          if user == asuka:
-            userReact = ctx.author
-          else:
-            userReact = user
-            return True
-
-      try:
-        emoji = "▶️"
-        while await self.bot.wait_for('reaction_add',
-                                      check=checkReaction,
-                                      timeout=60):
-          embedCt *= -1
-          await embedMessage.remove_reaction(emoji, userReact)
-          if embedCt == 1:
-            await embedMessage.edit(embed=synopsisEmbed)
-          else:
-            await embedMessage.edit(embed=embed)
-
-      except asyncio.TimeoutError:
-        await embedMessage.remove_reaction(emoji, asuka)
-        return
-    except Exception as e:
-      print(e)
-      await ctx.send("Invalid response b-baka!")
+  @nextcord.slash_command(
+    name='seasonanime',
+    description="Search current season Anime on myanimelist db",
+    guild_ids=asukaDB.testServers)
+  async def seasonAnimeSlash(self, interaction):
+    await interaction.response.defer(ephemeral=True, with_message=True)
+    msg, obj = searchSeasonAnime()
+    await controllerFunc(self, interaction, "interaction", msg, obj)
 
 
 def setup(bot):

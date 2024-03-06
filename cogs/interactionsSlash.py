@@ -32,9 +32,9 @@ class interactionsSlash(commands.Cog):
     "clears a default number of 5 messages if not declared after command.",
     guild_ids=asukaDB.testServers)
   async def clear(self, interaction, *, amount: int):
+    await interaction.response.defer(ephemeral=True, with_message=False)
     await interaction.channel.purge(limit=amount)
-    await interaction.response.send_message("Messages purged successfully!",
-                                            ephemeral=True)
+    await interaction.delete_original_message()
 
   @nextcord.slash_command(name='usrinfo',
                           description="Display mentioned user's info.",
