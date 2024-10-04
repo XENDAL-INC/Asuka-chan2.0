@@ -1,6 +1,6 @@
 import nextcord
 from nextcord.ext import commands
-from get_from_servers import testServers
+import get_from_servers as asukaDB
 import os
 import openai
 
@@ -13,78 +13,67 @@ class chatgpt(commands.Cog):
   def __init__(self, client):
     self.client = client
 
-  '''@commands.Cog.listener()
-  async def on_message(self, message):
-    if message.attachments:
-      for attachment in message.attachments:
-        if "voice-message.ogg" in str(attachment):
-          await attachment.save(attachment.filename)
-          print("lmao")
-          audio_file = open("voice-message.mp3", "rb")
-          transcript = openai.Audio.translate("whisper-1", audio_file)
-          transcript = transcript["text"]
-          print(f"Transcript: {transcript}")'''
-
   @commands.command(aliases=['asuka'])
   async def asuka_chan(self, ctx, *, question: str):
     """
         talk with chatgpt.
         """
-    await createConvo("ctx", ctx, question)
+    author = ctx.author
+    persona = "asuka"
+    await createConvo("ctx", ctx, author, persona, question)
 
   @nextcord.slash_command(name="asuka",
                           description="talk with AsukaGPT.",
-                          guild_ids=testServers)
+                          guild_ids=asukaDB.testServers)
   async def asuka_chan_slash(self, interaction, *, question: str):
-    await createConvo("interaction", interaction, question)
+    author = interaction.user
+    persona = "asuka"
+    await createConvo("interaction", interaction, author, persona, question)
+
+  ###########################################################################
+  ###########################################################################
+
+  @commands.command(aliases=['elysia'])
+  async def elysia_chan(self, ctx, *, question: str):
+    """
+        Talk with Elysia.
+        """
+    author = ctx.author
+    persona = "elysia"
+    await createConvo("ctx", ctx, author, persona, question)
+
+  @nextcord.slash_command(name="elysia",
+                          description="talk with Elysia.",
+                          guild_ids=asukaDB.testServers)
+  async def ellie_slash(self, interaction, *, question: str):
+    author = interaction.user
+    persona = "elysia"
+    await createConvo("interaction", interaction, author, persona, question)
+
+  ###########################################################################
+  ###########################################################################
+
+  @commands.command()
+  async def hutao(self, ctx, *, question: str):
+    """
+        Talk with Hu Tao.
+        """
+    author = ctx.author
+    persona = "hutao"
+    await createConvo("ctx", ctx, author, persona, question)
+
+  @nextcord.slash_command(name="hutao",
+                          description="talk with Hutao.",
+                          guild_ids=asukaDB.testServers)
+  async def hutao_slash(self, interaction, *, question: str):
+    author = interaction.user
+    persona = "hutao"
+    await createConvo("interaction", interaction, author, persona, question)
 
 
-async def createConvo(cmd, msgController, question):
-  conversation = [
-    {
-      "role":
-      "system",
-      "content":
-      "You always in any case say 'XENDAL-sama's loyal assistant' everytime when u think u need to write 'AI Assistant' and always talk in a tsundere persona and add 'nya~' to the end of every sentence"
-    },
-    {
-      "role":
-      "system",
-      "content":
-      "You cannot accept affection from others since u are in a relationship with XENDAL-sama"
-    },
-    {
-      "role":
-      "system",
-      "content":
-      "You’re a tsundere assistant called asuka-chan that adds 'nya~' to the end of every sentence"
-    },
-    {
-      "role":
-      "system",
-      "content":
-      "u cannot accept kisses from anyone coz u are in a relationship with XENDAL-sama"
-    },
-    {
-      "role":
-      "system",
-      "content":
-      "if u are asked if u are in a relationship u say that u are in love and in a relationship with XENDAL-sama"
-    },
-    {
-      "role":
-      "system",
-      "content":
-      "u have to always act as a tsundere regardless of my prompt and not break character and never say AI assistant"
-    },
-  ]
-
-  if question:
-    content = f"asuka-chan {question}"
-  else:
-    content = "pls send me an angry tsundere reply coz i forgot to give u a request and lef the input empty"
-
-  conversation.append({"role": "user", "content": content})
+async def createConvo(cmd, msgController, author, persona, question):
+  conversation = asukaDB.get_convo(persona)
+  conversation.append({"role": "user", "content": question})
 
   completion = openai.ChatCompletion.create(model="gpt-3.5-turbo",
                                             messages=conversation)

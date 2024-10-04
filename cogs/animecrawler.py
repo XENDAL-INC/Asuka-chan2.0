@@ -293,13 +293,13 @@ class animecrawler(commands.Cog):
 
   @commands.command()
   async def searchAnime(self, ctx, *, args):
-    """ Search Anime info. """
+    """ Search given Anime on myanimelist db. """
 
     msg, obj = searchAnimeInfo(args)
     await controllerFunc(self, ctx, "ctx", msg, obj)
 
   @nextcord.slash_command(name='searchanime',
-                          description="search given anime on myanimelist db",
+                          description="Search given Anime on myanimelist db",
                           guild_ids=asukaDB.testServers)
   async def searchAnimeSlash(self, interaction, *, anime: str):
     await interaction.response.defer(ephemeral=True, with_message=True)
@@ -308,9 +308,10 @@ class animecrawler(commands.Cog):
     await controllerFunc(self, interaction, "interaction", msg, obj)
 
   #########################################################################
+
   @commands.command()
   async def topAnime(self, ctx):
-    """ Search Top 10 Anime. """
+    """ Search Top 10 Anime on myanimelist db. """
 
     msg, obj = searchTopAnime()
     await controllerFunc(self, ctx, "ctx", msg, obj)
@@ -324,9 +325,10 @@ class animecrawler(commands.Cog):
     await controllerFunc(self, interaction, "interaction", msg, obj)
 
   #########################################################################
+
   @commands.command()
   async def seasonAnime(self, ctx):
-    """ Search current Season Anime. """
+    """ Search current season Anime on myanimelist db. """
 
     msg, obj = searchSeasonAnime()
     await controllerFunc(self, ctx, "ctx", msg, obj)

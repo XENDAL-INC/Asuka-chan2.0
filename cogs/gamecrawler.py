@@ -8,56 +8,47 @@ import requests
 import get_from_servers as asukaDB
 
 
-class Manga:
-  type = ""
-  volumes = ""
-  chapters = ""
-  status = ""
-  published = ""
-  genres = ""
-  demographic = ""
-  serialization = ""
-  authors = ""
-  score = ""
+class Game:
+  appid = ""
   title = ""
   link = ""
-  synopsis = ""
-  background = ""
   thumbnail = ""
+  price = ""
+  developer = ""
+  publisher = ""
+  release_date = ""
+  synopsis = ""
 
 
 #########################################################################
 
 
-def searchMangaInfo(args):
+def searchGameInfo(args):
   obj = []
-  url = "https://myanimelist.net/manga.php?cat=manga&q=" + args.replace(
-    " ", "%20", -1)
+  args = args.replace(" ", "%20", -1)
+  url = f"https://store.steampowered.com/search/?term={args}"
 
   source_code = requests.get(url)
   plain_text = source_code.text
   soup = BeautifulSoup(plain_text, "html.parser")
   ct = 0
-  tstring = ""
-  for link in soup.findAll('a', {'class': 'hoverinfo_trigger fw-b'}):
+  for link in soup.findAll('a', attrs={'data-ds-appid': True}):
     if ct < 5:
+      temp = Game()
+      temp.appid = link.get('data-ds-appid')
 
-      temp = Manga()
-      temp.title = str(link.contents).replace("[<strong>", "", -1)
-      temp.title = temp.title.replace("</strong>]", "", -1)
-      temp.link = link.get('href')
+      temp.title = link.find('span', {'class': 'title'}).text
+      temp.link = f"https://store.steampowered.com/app/{temp.appid}"
       obj.append(temp)
       ct += 1
     else:
       break
-    tstring = "Choose one of the Mangas below for more info."
+  tstring = "Choose one of the Games below for more info."
   return tstring, obj
 
 
 #########################################################################
-
-
-def searchTopManga():
+'''def searchTopManga():
   obj = []
   url = "https://myanimelist.net/topmanga.php?type=bypopularity"
 
@@ -76,44 +67,9 @@ def searchTopManga():
     else:
       break
     tstring = "Choose one of the Mangas below for more info."
-  return tstring, obj
-
+  return tstring, obj'''
 
 #########################################################################
-
-
-def getTextInfo(soup, text):
-  content = "N\\A"
-  for manga in soup.findAll('span', {'class': 'dark_text'}):
-    if text in str(manga):
-      if text == "Type":
-        temp = manga.parent.find('a')
-        content = str(temp.next_element)
-        return content
-
-      if text != "Score":
-        content = str(manga.nextSibling)
-
-      else:
-        temp = manga.parent.find('span', {'itemprop': 'ratingValue'})
-        try:
-          content = str(temp.next_element)
-        except:
-          content = "N/A"
-      content = content.replace("\n ", "", -1)
-      content = content.lstrip(' ')
-
-      if content == "\n":
-        content = ""
-        ct = 0
-        for temp in manga.parent.findAll('a'):
-          if ct >= 1:
-            content += ", "
-          content += str(temp.next_element)
-          ct += 1
-      content = content.replace("\n", "", -1)
-      break
-  return content
 
 
 def getInfo(index, obj):
@@ -121,46 +77,50 @@ def getInfo(index, obj):
   plain_text = source_code.text
   soup = BeautifulSoup(plain_text, "html.parser")
 
-  obj[index].type = getTextInfo(soup, "Type")
-  obj[index].volumes = getTextInfo(soup, "Volumes")
-  obj[index].chapters = getTextInfo(soup, "Chapters")
-  obj[index].status = getTextInfo(soup, "Status")
-  obj[index].published = getTextInfo(soup, "Published")
-  obj[index].genres = getTextInfo(soup, "Genres")
-  obj[index].demographic = getTextInfo(soup, "Demographic")
-  obj[index].serialization = getTextInfo(soup, "Serialization")
-  obj[index].authors = getTextInfo(soup, "Authors")
-  obj[index].score = getTextInfo(soup, "Score")
-  #for thumbnail
-  ctThumb = 0
-  for images in soup.findAll('img'):
-    if ctThumb == 1:
-      thumbnail = images
+  for developer in soup.findAll('div', attrs={'id': 'developers_list'}):
+    obj[index].developer += f", {developer.find('a').text}"
+  obj[index].developer = obj[index].developer[2:]
+
+  isBreak = False
+  for div in soup.findAll('div', attrs={'class': 'summary column'}):
+    if not isBreak:
+      if div.get('id') == 'developers_list':
+        isBreak = True
+    else:
+      for publisher in div.findAll('a'):
+        obj[index].publisher += f", {publisher.text}"
+      obj[index].publisher = obj[index].publisher[2:]
       break
-    ctThumb += 1
-  obj[index].thumbnail = thumbnail.get('data-src')
+
+  obj[index].release_date = soup.find('div', attrs={'class': 'date'}).text
+  obj[index].price = soup.find('div',
+                               attrs={
+                                 'class': 'game_purchase_price price'
+                               }).text.strip()
+
+  #for thumbnail
+  obj[index].thumbnail = soup.find('link', attrs={
+    'rel': "image_src"
+  }).get('href')
 
   #for synopsis
-  temp = soup.find('span', {'itemprop': 'description'})
-  for content in temp.contents:
-    if "<br>" and "<br/>" not in str(content):
-      obj[index].synopsis += str(content)
-  obj[index].synopsis = str(obj[index].synopsis.replace("<i>", "***", -1))
-  obj[index].synopsis = str(obj[index].synopsis.replace("</i>", "***", -1))
-  obj[index].synopsis = str(obj[index].synopsis.replace("<br>", "", -1))
-  obj[index].synopsis = str(obj[index].synopsis.replace("</br>", "", -1))
+  obj[index].synopsis = soup.find('div', attrs={
+    'id': 'aboutThisGame'
+  }).find('div', attrs={
+    'class': 'game_area_description'
+  }).text
 
   embed = Embed()
   embed.color = 0xf8562d
   embed.title = obj[index].title
   embed.set_image(url=obj[index].thumbnail)
-  embed.description = printMangaInfo(index, obj)
+  embed.description = printGameInfo(index, obj)
   embed.set_footer(text='Page 1/2')
   synopsisEmbed = Embed()
   synopsisEmbed.set_footer(text='Page 2/2')
   synopsisEmbed.color = 0xf8562d
   synopsisEmbed.title = obj[index].title
-  synopsisEmbed.description = "**Synopsis: **" + obj[index].synopsis
+  synopsisEmbed.description = obj[index].synopsis
 
   return embed, synopsisEmbed
 
@@ -168,21 +128,16 @@ def getInfo(index, obj):
 #########################################################################
 
 
-def printMangaInfo(index, obj):
-  mangaTest = ""
-  mangaTest += "**Title: **" + obj[index].title
-  mangaTest += "\n**Type: **" + obj[index].type
-  mangaTest += "\n**Volumes: **" + obj[index].volumes
-  mangaTest += "\n**Chapters: **" + obj[index].chapters
-  mangaTest += "\n**Status: **" + obj[index].status
-  mangaTest += "\n**Published: **" + obj[index].published
-  mangaTest += "\n**Genres: **" + obj[index].genres
-  mangaTest += "\n**Demographic: **" + obj[index].demographic
-  mangaTest += "\n**Serialization: **" + obj[index].serialization
-  mangaTest += "\n**Authors: **" + obj[index].authors
-  mangaTest += "\n**Score: **" + obj[index].score
-  mangaTest += "\n" + obj[index].link
-  return mangaTest
+def printGameInfo(index, obj):
+  gameString = f"**AppID: ** {obj[index].appid}"
+  gameString += f"\n**Title:** {obj[index].title}"
+  gameString += f"\n**Release Date:** {obj[index].release_date}"
+  gameString += f"\n**Developer:** {obj[index].developer}"
+  gameString += f"\n**Publisher:** {obj[index].publisher}"
+  gameString += f"\n**Price:** {obj[index].price}"
+  gameString += f"\n{obj[index].link}"
+
+  return gameString
 
 
 #########################################################################
@@ -197,11 +152,13 @@ async def controllerFunc(self, msgController, cmd, msg, obj):
 
   view = View()
   selectOptions = StringSelect(custom_id='selction0',
-                               placeholder='-- choose manga --',
+                               placeholder='-- choose game --',
                                min_values=1,
                                max_values=1)
 
   for i in range(len(obj)):
+    if i >= 25:
+      break
     title = obj[i].title
     shortened_title = title[:50] if len(title) > 50 else title
     selectOptions.add_option(label=str(i + 1) + " - " + shortened_title,
@@ -263,30 +220,29 @@ async def controllerFunc(self, msgController, cmd, msg, obj):
 #########################################################################
 
 
-class mangacrawler(commands.Cog):
+class gamecrawler(commands.Cog):
 
   def __init__(self, bot):
     self.bot = bot
 
   @commands.command()
-  async def searchManga(self, ctx, *, args):
-    """ Search given Manga on myanimelist db. """
+  async def searchGame(self, ctx, *, game: str):
+    """ Search given Game on Steam db. """
 
-    msg, obj = searchMangaInfo(args)
+    msg, obj = searchGameInfo(game)
     await controllerFunc(self, ctx, "ctx", msg, obj)
 
-  @nextcord.slash_command(name='searchmanga',
-                          description="Search given Manga on myanimelist db",
+  @nextcord.slash_command(name='searchgame',
+                          description="Search given Game on Steam db",
                           guild_ids=asukaDB.testServers)
-  async def searchMangaSlash(self, interaction, *, args):
+  async def searchGameSlash(self, interaction, *, game: str):
     await interaction.response.defer(ephemeral=True, with_message=True)
-    msg, obj = searchMangaInfo(args)
+    msg, obj = searchGameInfo(game)
     await controllerFunc(self, interaction, "interaction", msg, obj)
 
   #########################################################################
-
-  @commands.command()
-  async def topManga(self, ctx):
+  '''@commands.command()
+  async def topGame(self, ctx):
     """ Search Top 10 Manga on myanimelist db. """
 
     msg, obj = searchTopManga()
@@ -298,8 +254,8 @@ class mangacrawler(commands.Cog):
   async def topMangaSlash(self, interaction):
     await interaction.response.defer(ephemeral=True, with_message=True)
     msg, obj = searchTopManga()
-    await controllerFunc(self, interaction, "interaction", msg, obj)
+    await controllerFunc(self, interaction, "interaction", msg, obj)'''
 
 
 def setup(bot):
-  bot.add_cog(mangacrawler(bot))
+  bot.add_cog(gamecrawler(bot))

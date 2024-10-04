@@ -26,6 +26,17 @@ def get_honorifics(id):
 
 #############################################################
 
+
+def get_convo(persona):
+  try:
+    with open(f'db/chatgpt/conversations/{persona}.json', 'r') as f:
+      return json.load(f)
+  except:
+    return []
+
+
+#############################################################
+
 global gifsPath
 gifsPath = "db/gifs.asdb"
 

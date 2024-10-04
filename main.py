@@ -50,6 +50,7 @@ async def on_ready():
   client.load_extension('cogs.ServerStatus')
   client.load_extension('cogs.animecrawler')
   client.load_extension('cogs.mangacrawler')
+  client.load_extension('cogs.gamecrawler')
   #client.load_extension('cogs.ytubeconverter')
   client.load_extension('cogs.RPGCommands')
   client.load_extension('cogs.chatgpt')
